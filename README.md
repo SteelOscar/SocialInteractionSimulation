@@ -1,3 +1,3 @@
 # SocialInteractionSimulation
 
-# + All code in path src/main/kotlin
+ + # All code in path src/main/kotlin
