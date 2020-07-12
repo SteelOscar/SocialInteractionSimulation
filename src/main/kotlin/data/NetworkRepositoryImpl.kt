@@ -48,7 +48,12 @@ class NetworkRepositoryImpl @Inject constructor(
 
     override fun getAuthUser(): UserProfile {
 
-        return apiInteractor.getModel(url = "/api/v1/user")
+        return apiInteractor.getModel(
+            url = "/api/v1/user",
+            headers = mapOf(
+                "Authorization" to "Bearer YB5SUZP6EawrVy54sL4UHUDyB7wNyg"
+            )
+        )
     }
 
     override fun updateUserProfile(model: UpdateUserDomain): UserProfile {

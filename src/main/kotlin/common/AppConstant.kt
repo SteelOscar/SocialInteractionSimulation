@@ -12,7 +12,9 @@ object AppConstant {
     /**
      * Network
      */
-    const val BASE_URL_API = "https://***.***.***.***"
+    const val BASE_URL_API = "http://192.168.1.10:3000/"
 
     var auth_token = "token"
+
+    const val BASE_URL_OAUTH = "http://192.168.1.10:3000/api/openid_connect/clients"
 }

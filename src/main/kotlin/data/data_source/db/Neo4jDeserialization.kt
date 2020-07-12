@@ -5,7 +5,7 @@ import data.data_source.db.model.Person
 import org.neo4j.driver.types.Node
 import javax.inject.Inject
 
-class Neo4jDeserialization constructor() {
+class Neo4jDeserialization @Inject constructor() {
 
     fun getPerson(node: Node): Person = with(node) {
 
