@@ -1,6 +1,5 @@
 package data.data_source.api
 
-import data.data_source.api.deserializer.DataDeserializer
 import data.data_source.api.mapper.RetrofitResponseToApiMapper
 import data.data_source.api.model.ApiResponse
 import de.undercouch.gradle.tasks.download.org.apache.http.HttpException
