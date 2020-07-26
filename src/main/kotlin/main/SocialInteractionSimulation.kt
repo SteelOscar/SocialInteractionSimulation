@@ -1,9 +1,10 @@
 package main
 
 import common.LogHelper
-import data.data_source.db.model.Person
+import data.data_source.db.neo4j.model.Person
 import di.DaggerAppComponent
 import di.DiProvider
+import domain.usecase.CreateUserUseCase
 import domain.usecase.GetUserInfoUseCase
 import domain.usecase.OAuthUseCase
 import javax.inject.Inject
@@ -24,10 +25,15 @@ class SocialInteractionSimulation {
     @Inject
     lateinit var getUserInfoUseCase: GetUserInfoUseCase
 
+    @Inject
+    lateinit var createUserUseCase: CreateUserUseCase
+
     fun startSimulation() {
 
 //        val users = userProvider.provide()
 
-        LogHelper.logI(getUserInfoUseCase.exec())
+//        LogHelper.logI(getUserInfoUseCase.exec())
+
+        createUserUseCase.exec("renat_new_user")
     }
 }

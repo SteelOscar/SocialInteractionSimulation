@@ -8,6 +8,7 @@ import data.data_source.api.model.body.MessageBody
 import data.data_source.api.model.response.Conversation
 import data.data_source.api.model.response.Message
 import data.data_source.api.model.response.UserProfile
+import data.data_source.db.postgres.PostgresInteractor
 import data.mapper.ConversationDomainToBodyMapper
 import data.mapper.UpdateUserDomainToBodyMapper
 import domain.NetworkRepository
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class NetworkRepositoryImpl @Inject constructor(
 
     private val apiInteractor: ApiInteractor,
+    private val postgresInteractor: PostgresInteractor,
     private val conversationMapper: ConversationDomainToBodyMapper,
     private val updateUserMapper: UpdateUserDomainToBodyMapper
 
@@ -40,10 +42,19 @@ class NetworkRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun createUser() {
+    override fun createUser(username: String) {
         /**
          * not implemented in API Diaspora Social Network
          */
+
+        val user = postgresInteractor.getUser(1)
+
+        val newUser = user.copy(
+            id = 3,
+            username = username
+        )
+
+        postgresInteractor.insertUser(newUser)
     }
 
     override fun getAuthUser(): UserProfile {

@@ -13,7 +13,7 @@ interface NetworkRepository {
 
     fun createConversation(model: ConversationDomain): Conversation
 
-    fun createUser()
+    fun createUser(username: String)
 
     fun getAuthUser(): UserProfile
 

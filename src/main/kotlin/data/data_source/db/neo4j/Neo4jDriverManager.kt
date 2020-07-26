@@ -1,4 +1,4 @@
-package data.data_source.db
+package data.data_source.db.neo4j
 
 import common.AppConstant.BASE_URL_NEO4J
 import common.AppConstant.PASSWORD

@@ -1,7 +1,7 @@
-package data.data_source.db
+package data.data_source.db.neo4j
 
-import data.data_source.db.model.Gender
-import data.data_source.db.model.Person
+import data.data_source.db.neo4j.model.Gender
+import data.data_source.db.neo4j.model.Person
 import org.neo4j.driver.types.Node
 import javax.inject.Inject
 

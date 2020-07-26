@@ -1,7 +1,7 @@
 package main
 
 import common.LogHelper
-import data.data_source.db.model.Person
+import data.data_source.db.neo4j.model.Person
 import di.DiProvider
 import domain.usecase.GetUsersUseCase
 import javax.inject.Inject

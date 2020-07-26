@@ -1,8 +1,8 @@
 package data
 
-import data.data_source.db.Neo4jDeserialization
-import data.data_source.db.Neo4jDriverManager
-import data.data_source.db.model.Person
+import data.data_source.db.neo4j.Neo4jDeserialization
+import data.data_source.db.neo4j.Neo4jDriverManager
+import data.data_source.db.neo4j.model.Person
 import domain.Neo4jRepository
 import javax.inject.Inject
 

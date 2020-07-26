@@ -1,4 +1,4 @@
-package data.data_source.db.model
+package data.data_source.db.neo4j.model
 
 enum class Gender {
 

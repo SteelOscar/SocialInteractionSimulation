@@ -1,6 +1,6 @@
 package domain
 
-import data.data_source.db.model.Person
+import data.data_source.db.neo4j.model.Person
 
 interface Neo4jRepository {
 

@@ -2,7 +2,7 @@ package main.di
 
 import dagger.Binds
 import dagger.Module
-import data.data_source.db.model.Person
+import data.data_source.db.neo4j.model.Person
 import di.DiProvider
 import main.UserProvider
 

@@ -4,6 +4,7 @@ import data.data_source.api.ApiInteractor
 import data.data_source.api.deserializer.DataDeserializer
 import data.di.DataDeserializerComponentHolder
 import okhttp3.Headers
+import org.joda.time.DateTime
 
 fun Headers.toMap(): Map<String,String> {
 
@@ -41,3 +42,20 @@ inline fun <reified T> ApiInteractor.patchModel(url: String,
     return patch(url, body, headers).convertToModel(component.deserializer)
 }
 
+inline fun <reified T> T?.orEmpty(): T {
+
+    if (this != null) return this
+
+    val asd = T::class.java
+
+    val result =  when(T::class.java) {
+
+        Integer::class.java -> 0
+        String::class.java -> ""
+        DateTime::class.java -> DateTime()
+        Boolean::class.java -> false
+        else -> this!!
+    }
+
+    return result as T
+}
