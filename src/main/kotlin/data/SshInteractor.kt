@@ -37,22 +37,21 @@ class SshInteractor @Inject constructor(
 
     private fun String.convertCyrillic(): String? {
 
-        val cyr = charArrayOf(
-            'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'к', 'л', 'м', 'н', 'о', 'п',
-            'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ь', 'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З',
-            'И', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ь'
+        val cyr = arrayOf(
+            "а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п",
+            "р", "с", "т", "у", "ф", "х", "ц", "ч", "ю", "я", "ш", "щ", "ь", "А", "Б", "В", "Г", "Д", "Е", "Ё", "Ж", "З",
+            "И", "К", "Л", "М", "Н", "О", "П", "Р", "С", "Т", "У", "Ф", "Х", "Ц", "Ч", "Ю", "Я", "Ш", "Щ"
         )
         val lat = arrayOf(
-            "a", "b", "v", "g", "d", "e", "e", "zh", "z", "i", "k", "l", "m", "n", "o", "p",
-            "r", "s", "t", "u", "f", "h", "ts", "ch", "sh", "shch", "'", "A", "B", "V", "G", "D", "E", "E", "Zh", "Z",
-            "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "TS", "CH", "SH", "SHCH", "'"
+            "a", "b", "v", "g", "d", "e", "e", "zh", "z", "i", "y", "k", "l", "m", "n", "o", "p",
+            "r", "s", "t", "u", "f", "h", "ts", "ch", "yu", "ya", "sh", "shch", "", "A", "B", "V", "G", "D", "E", "E", "Zh", "Z",
+            "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "Ts", "Ch", "Yu", "Ya", "SH", "Shch"
         )
 
-        cyr.forEachIndexed { index, c ->
+        var formattedString = this
 
-            replace(c.toString(), lat[index])
-        }
+        cyr.forEachIndexed { index, c -> formattedString = formattedString.replace(c, lat[index]) }
 
-        return this
+        return formattedString
     }
 }
