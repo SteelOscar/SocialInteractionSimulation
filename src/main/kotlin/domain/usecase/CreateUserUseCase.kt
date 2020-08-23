@@ -1,5 +1,6 @@
 package domain.usecase
 
+import data.data_source.db.neo4j.model.Person
 import domain.NetworkRepository
 import javax.inject.Inject
 
@@ -9,5 +10,5 @@ class CreateUserUseCase @Inject constructor(
 
 ) {
 
-    fun exec(username: String) = networkRepository.createUser(username)
+    fun exec(user: Person) = networkRepository.createUser(user)
 }

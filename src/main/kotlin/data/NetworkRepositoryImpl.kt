@@ -8,6 +8,7 @@ import data.data_source.api.model.body.MessageBody
 import data.data_source.api.model.response.Conversation
 import data.data_source.api.model.response.Message
 import data.data_source.api.model.response.UserProfile
+import data.data_source.db.neo4j.model.Person
 import data.data_source.db.postgres.PostgresInteractor
 import data.mapper.ConversationDomainToBodyMapper
 import data.mapper.UpdateUserDomainToBodyMapper
@@ -22,7 +23,8 @@ class NetworkRepositoryImpl @Inject constructor(
     private val apiInteractor: ApiInteractor,
     private val postgresInteractor: PostgresInteractor,
     private val conversationMapper: ConversationDomainToBodyMapper,
-    private val updateUserMapper: UpdateUserDomainToBodyMapper
+    private val updateUserMapper: UpdateUserDomainToBodyMapper,
+    private val sshInteractor: SshInteractor
 
 ) : NetworkRepository {
 
@@ -42,19 +44,14 @@ class NetworkRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun createUser(username: String) {
+    override fun createUser(user: Person) {
         /**
          * not implemented in API Diaspora Social Network
          */
 
-        val user = postgresInteractor.getUser(1)
+        val password = "qazwsxed9"
 
-        val newUser = user.copy(
-            id = 3,
-            username = username
-        )
-
-        postgresInteractor.insertUser(newUser)
+        sshInteractor.createUser(user, password)
     }
 
     override fun getAuthUser(): UserProfile {

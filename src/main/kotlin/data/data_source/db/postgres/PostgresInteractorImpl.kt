@@ -5,7 +5,9 @@ import common.orEmpty
 import data.data_source.db.postgres.model.Users
 import data.data_source.db.postgres.model.UserProfile
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.Date
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
@@ -38,11 +40,40 @@ class PostgresInteractorImpl @Inject constructor() : PostgresInteractor {
                 it[language] = user.language
                 it[email] = user.email
                 it[encryptedPassword] = user.encryptedPassword
+                it[resetPasswordToken] = "a"
+                it[rememberCreatedAt] = DateTime()
+                it[signInCount] = 1
+                it[current_sign_in_at] = DateTime()
+                it[last_sign_in_at] = DateTime()
+                it[current_sign_in_ip] = "a"
+                it[last_sign_in_ip] = "a"
+                it[created_at] = DateTime()
+                it[updated_at] = DateTime()
+                it[invited_by_id] = 0
                 it[authenticationToken] = user.authenticationToken
+                it[unconfirmed_email] = "a"
+                it[confirm_email_token] = "a"
+                it[locked_at] = DateTime()
                 it[showCommunitySpotlightInStream] = user.showCommunitySpotlightInStream
-                it[exporting] = user.exporting
+                it[auto_follow_back] = false
+                it[auto_follow_back_aspect_id] = 0
+                it[hidden_shareables] = "a"
+                it[reset_password_sent_at] = DateTime()
+                it[last_seen] = DateTime()
+                it[remove_after] = DateTime()
+                it[export] = "a"
+                it[exported_at] = DateTime()
+                it[exporting] = false
                 it[stripExif] = user.stripExif
+                it[exported_photos_file] = "a"
+                it[exported_photos_at] = DateTime()
+                it[exportingPhotos] = false
                 it[colorTheme] = user.colorTheme
+                it[post_default_public] = false
+                it[consumed_timestep] = 0
+                it[otp_required_for_login] = false
+                it[otp_backup_codes] = "a"
+                it[plain_otp_secret] = "a"
             }
         }
     }
@@ -61,39 +92,10 @@ class PostgresInteractorImpl @Inject constructor() : PostgresInteractor {
                 language = it[Users.language],
                 email = it[Users.email],
                 encryptedPassword = it[Users.encryptedPassword],
-                resetPasswordToken = it.getOrNull(Users.resetPasswordToken) ?: "",
-                rememberCreatedAt = it.getOrNull(Users.rememberCreatedAt) ?: DateTime(),
-                signInCount = it[Users.signInCount],
-                currentSignInAt = it.getOrNull(Users.current_sign_in_at) ?: DateTime(),
-                lastSignInAt = it.getOrNull(Users.last_sign_in_at) ?: DateTime(),
-                currentSignInIp = it[Users.current_sign_in_ip],
-                lastSignInIp = it[Users.last_sign_in_ip],
-                createdAt = it.getOrNull(Users.created_at) ?: DateTime(),
-                updatedAt = it.getOrNull(Users.updated_at) ?: DateTime(),
-                invitedById = it.getOrNull(Users.invited_by_id) ?: 0,
-                unconfirmedEmail = it.getOrNull(Users.unconfirmed_email) ?: "",
-                confirmEmailToken = it.getOrNull(Users.confirm_email_token) ?: "",
-                lockedAt = it[Users.locked_at],
                 showCommunitySpotlightInStream = it[Users.showCommunitySpotlightInStream],
-                autoFollowBack = it[Users.auto_follow_back],
-                autoFollowBackAspectId = it.getOrNull(Users.auto_follow_back_aspect_id) ?: 0,
-                hiddenShareables = it[Users.hidden_shareables],
-                resetPasswordSentAt = it.getOrNull(Users.reset_password_sent_at) ?: DateTime(),
-                lastSeen = it[Users.last_seen],
-                removeAfter = it[Users.remove_after],
-                export = it[Users.export],
-                exportedAt = it[Users.exported_at],
-                exporting = it[Users.exporting],
                 stripExif = it[Users.stripExif],
-                exportedPhotosFile = it[Users.exported_photos_file],
-                exportedPhotosAt = it[Users.exported_photos_at],
                 exportingPhotos = it[Users.exportingPhotos],
-                colorTheme = it[Users.colorTheme],
-                postDefaultPublic = it[Users.post_default_public],
-                consumedTimestep = it.getOrNull(Users.consumed_timestep) ?: 0,
-                otpRequiredForLogin = it.getOrNull(Users.otp_required_for_login) ?: false,
-                otpBackupCodes = it[Users.otp_backup_codes],
-                plainOtpSecret = it[Users.plain_otp_secret]
+                colorTheme = it[Users.colorTheme]
             )
         }.first()
     }
@@ -112,40 +114,16 @@ class PostgresInteractorImpl @Inject constructor() : PostgresInteractor {
                 language = it[Users.language],
                 email = it[Users.email],
                 encryptedPassword = it[Users.encryptedPassword],
-                resetPasswordToken = it[Users.resetPasswordToken],
-                rememberCreatedAt = it[Users.rememberCreatedAt],
-                signInCount = it[Users.signInCount],
-                currentSignInAt = it[Users.current_sign_in_at],
-                lastSignInAt = it[Users.last_sign_in_at],
-                currentSignInIp = it[Users.current_sign_in_ip],
-                lastSignInIp = it[Users.last_sign_in_ip],
-                createdAt = it[Users.created_at],
-                updatedAt = it[Users.updated_at],
-                invitedById = it[Users.invited_by_id],
-                unconfirmedEmail = it[Users.unconfirmed_email],
-                confirmEmailToken = it[Users.confirm_email_token],
-                lockedAt = it[Users.locked_at],
                 showCommunitySpotlightInStream = it[Users.showCommunitySpotlightInStream],
-                autoFollowBack = it[Users.auto_follow_back],
-                autoFollowBackAspectId = it[Users.auto_follow_back_aspect_id],
-                hiddenShareables = it[Users.hidden_shareables],
-                resetPasswordSentAt = it[Users.reset_password_sent_at],
-                lastSeen = it[Users.last_seen],
-                removeAfter = it[Users.remove_after],
-                export = it[Users.export],
-                exportedAt = it[Users.exported_at],
-                exporting = it[Users.exporting],
                 stripExif = it[Users.stripExif],
-                exportedPhotosFile = it[Users.exported_photos_file],
-                exportedPhotosAt = it[Users.exported_photos_at],
                 exportingPhotos = it[Users.exportingPhotos],
-                colorTheme = it[Users.colorTheme],
-                postDefaultPublic = it[Users.post_default_public],
-                consumedTimestep = it[Users.consumed_timestep],
-                otpRequiredForLogin = it[Users.otp_required_for_login],
-                otpBackupCodes = it[Users.otp_backup_codes],
-                plainOtpSecret = it[Users.plain_otp_secret]
+                colorTheme = it[Users.colorTheme]
             )
         }.last()
+    }
+
+    override fun removeUser(username: String) {
+
+        transaction { Users.deleteWhere { Users.username.eq(username) } }
     }
 }

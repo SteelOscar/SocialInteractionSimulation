@@ -18,4 +18,6 @@ interface PostgresInteractor {
     fun getUser(id: Int): UserProfile
 
     fun getLastUser(): UserProfile
+
+    fun removeUser(username: String)
 }
