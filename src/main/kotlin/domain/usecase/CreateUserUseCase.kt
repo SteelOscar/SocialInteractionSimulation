@@ -6,9 +6,14 @@ import javax.inject.Inject
 
 class CreateUserUseCase @Inject constructor(
 
-    private val networkRepository: NetworkRepository
+    private val networkRepository: NetworkRepository,
+    private val oAuthUseCase: OAuthRegisterUserUseCase
 
 ) {
 
-    fun exec(user: Person) = networkRepository.createUser(user)
+    fun exec(user: Person) {
+
+        networkRepository.createUser(user)
+        oAuthUseCase.exec(user)
+    }
 }

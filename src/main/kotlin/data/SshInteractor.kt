@@ -45,7 +45,7 @@ class SshInteractor @Inject constructor(
         val lat = arrayOf(
             "a", "b", "v", "g", "d", "e", "e", "zh", "z", "i", "y", "k", "l", "m", "n", "o", "p",
             "r", "s", "t", "u", "f", "h", "ts", "ch", "yu", "ya", "sh", "shch", "", "A", "B", "V", "G", "D", "E", "E", "Zh", "Z",
-            "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "Ts", "Ch", "Yu", "Ya", "SH", "Shch"
+            "I", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "F", "H", "Ts", "Ch", "Yu", "Ya", "Sh", "Shch"
         )
 
         var formattedString = this

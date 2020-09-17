@@ -11,4 +11,7 @@ data class Person(
     val socialRole: List<String>,
     val profRole: String,
     val relationshipIds: HashSet<Int>
-)
+) {
+
+    var authToken: String? = null
+}

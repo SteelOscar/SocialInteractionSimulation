@@ -6,40 +6,36 @@ import data.di.DataDeserializerComponentHolder
 import okhttp3.Headers
 import org.joda.time.DateTime
 
+val dataDeserializer by lazy { DataDeserializerComponentHolder.getComponent().deserializer }
+
 fun Headers.toMap(): Map<String,String> {
 
     return toMultimap().mapValues { it.value.joinToString(separator = ";") }
 }
 
-inline fun <reified T> Any.convertToModel(deserializer: DataDeserializer): T {
+inline fun <reified T> Any.convertToModel(deserializer: DataDeserializer = dataDeserializer): T {
 
-    return deserializer.convertToModel(this, this::class.java)
+    return deserializer.convertToModel(this, T::class.java)
 }
 
 inline fun <reified T> ApiInteractor.postModel(url: String,
                                                body: Any,
                                                headers: Map<String,String> = mapOf()): T {
 
-    val component = DataDeserializerComponentHolder.getComponent()
-
-    return post(url, body, headers).convertToModel(component.deserializer)
+    return post(url, body, headers).convertToModel(dataDeserializer)
 }
 
 inline fun <reified T> ApiInteractor.getModel(url: String,
                                                headers: Map<String,String> = mapOf()): T {
 
-    val component = DataDeserializerComponentHolder.getComponent()
-
-    return get(url, headers).convertToModel(component.deserializer)
+    return get(url, headers).convertToModel(dataDeserializer)
 }
 
 inline fun <reified T> ApiInteractor.patchModel(url: String,
                                                body: Any,
                                                headers: Map<String,String> = mapOf()): T {
 
-    val component = DataDeserializerComponentHolder.getComponent()
-
-    return patch(url, body, headers).convertToModel(component.deserializer)
+    return patch(url, body, headers).convertToModel(dataDeserializer)
 }
 
 inline fun <reified T> T?.orEmpty(): T {

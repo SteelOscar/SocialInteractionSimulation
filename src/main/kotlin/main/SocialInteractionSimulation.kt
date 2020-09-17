@@ -5,7 +5,8 @@ import di.DaggerAppComponent
 import di.DiProvider
 import domain.usecase.CreateUserUseCase
 import domain.usecase.GetUserInfoUseCase
-import domain.usecase.OAuthUseCase
+import domain.usecase.OAuthRegisterUserUseCase
+import domain.usecase.RegisterApplicationDiasporaCase
 import javax.inject.Inject
 
 class SocialInteractionSimulation {
@@ -19,7 +20,7 @@ class SocialInteractionSimulation {
     lateinit var userProvider: DiProvider<HashMap<Int, Person>>
 
     @Inject
-    lateinit var oAuthUseCase: OAuthUseCase
+    lateinit var oAuthUseCase: OAuthRegisterUserUseCase
 
     @Inject
     lateinit var getUserInfoUseCase: GetUserInfoUseCase
@@ -27,13 +28,19 @@ class SocialInteractionSimulation {
     @Inject
     lateinit var createUserUseCase: CreateUserUseCase
 
+    @Inject
+    lateinit var registerApplicationDiasporaCase: RegisterApplicationDiasporaCase
+
     fun startSimulation() {
 
-        val users = userProvider.provide()
+//        val users = userProvider.provide()
 
 //        LogHelper.logI(getUserInfoUseCase.exec())
 
-        users.forEach { createUserUseCase.exec(it.value) }
+//        users.forEach { createUserUseCase.exec(it.value) }
 
+//        createUserUseCase.exec(users.values.first())
+
+        oAuthUseCase.exec(null)
     }
 }

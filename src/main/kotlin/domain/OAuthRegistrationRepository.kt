@@ -4,5 +4,9 @@ import data.data_source.api.model.register.OAuthResponse
 
 interface OAuthRegistrationRepository {
 
-    fun register(): OAuthResponse
+    fun registerApplication(): OAuthResponse
+
+    fun getAuthenticateCode(): String
+
+    fun getAccessToken(code: String): String
 }

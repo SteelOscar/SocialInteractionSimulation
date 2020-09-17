@@ -41,15 +41,15 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.16.1'
     implementation 'org.slf4j:slf4j-api:1.7.25'
 
-    def version =  '0.16.1'
-
-//    implementation "org.jetbrains.exposed:exposed-core:$version"
-//    implementation "org.jetbrains.exposed:exposed-dao:$version"
-//    implementation "org.jetbrains.exposed:exposed-jdbc:$version"
-
     implementation "org.jetbrains.exposed:spring-transaction:0.16.1"
 
     implementation "org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72"
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+
+    implementation 'com.github.scribejava:scribejava-apis:6.4.1'
+
+    implementation 'org.mozilla:rhino:1.7.7.1'
 }
 
 compileKotlin {
