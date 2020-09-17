@@ -11,12 +11,13 @@ import data.data_source.api.model.register.OAuthResponse
 import data.data_source.api.model.response.AccessTokenResponse
 import data.data_source.socket.SocketInteractor
 import domain.OAuthRegistrationRepository
-import org.mozilla.javascript.Context.enter
-import java.awt.Desktop
-import java.net.URI
+import org.openqa.selenium.By
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.remote.DesiredCapabilities
+import org.openqa.selenium.remote.RemoteWebDriver
+import java.net.URL
 import javax.inject.Inject
-import javax.naming.Context
-import javax.script.ScriptEngineManager
 
 class OAuthRegistrationRepositoryImpl @Inject constructor(
 
@@ -41,7 +42,28 @@ class OAuthRegistrationRepositoryImpl @Inject constructor(
 
 //        Desktop.getDesktop().browse(URI(AppConstant.AUTHENTICATION_CODE_URL))
 
-        Runtime.getRuntime().exec("firefox ./test.html")
+        val driver = FirefoxDriver()
+
+        driver.get(AppConstant.LOGIN_URL)
+
+        val loginView = driver.findElementById("user_username")
+        val passwordView = driver.findElementById("user_password")
+        val loginButtonView = driver.findElementsByName("commit")[0]
+
+        loginView.sendKeys("RenatYumagulov")
+        passwordView.sendKeys("123456")
+        loginButtonView.click()
+
+        driver.navigate().to(AppConstant.AUTHENTICATION_CODE_URL)
+
+        val approveButtonView = driver.findElements(By.className("approval-button"))[1]
+
+        kotlin.runCatching { approveButtonView.click() }.onFailure {
+
+            println(it.message)
+        }
+
+        driver.quit()
 
         return socketInteractor.interceptResponseAuthCode()
     }

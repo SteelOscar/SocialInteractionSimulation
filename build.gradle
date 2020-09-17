@@ -49,7 +49,7 @@ dependencies {
 
     implementation 'com.github.scribejava:scribejava-apis:6.4.1'
 
-    implementation 'org.mozilla:rhino:1.7.7.1'
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version:'3.14.0'
 }
 
 compileKotlin {
