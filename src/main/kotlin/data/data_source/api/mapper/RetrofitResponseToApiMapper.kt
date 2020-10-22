@@ -17,7 +17,7 @@ class RetrofitResponseToApiMapper @Inject constructor() : (Response<ResponseBody
 
             code = raw.code(),
             isSuccessful = raw.isSuccessful,
-            body = raw.body()?.string(),
+            body = response.body()?.string().orEmpty(),
             headers = raw.headers().toMap(),
             message = raw.message(),
             protocol = raw.protocol().name,

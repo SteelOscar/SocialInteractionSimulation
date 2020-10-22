@@ -11,8 +11,6 @@ import data.data_source.api.SocialAPI
 import data.data_source.api.SocialApiProvider
 import data.data_source.db.postgres.PostgresInteractor
 import data.data_source.db.postgres.PostgresInteractorImpl
-import data.data_source.socket.SocketInteractor
-import data.data_source.socket.SocketInteractorImpl
 import di.DiProvider
 import domain.Neo4jRepository
 import domain.NetworkRepository
@@ -38,7 +36,4 @@ abstract class DataModule {
 
     @Binds
     abstract fun bindNetworkRepository(impl: NetworkRepositoryImpl): NetworkRepository
-
-    @Binds
-    abstract fun bindSocketInteraction(impl: SocketInteractorImpl): SocketInteractor
 }

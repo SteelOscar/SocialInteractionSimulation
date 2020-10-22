@@ -1,18 +1,20 @@
 package main
 
+import common.AppConstant
+import common.LogHelper
 import data.data_source.db.neo4j.model.Person
 import di.DaggerAppComponent
 import di.DiProvider
+import domain.model.ConversationDomain
+import domain.usecase.CreateAspectUseCase
+import domain.usecase.CreateContactUseCase
+import domain.usecase.CreateConversationUseCase
 import domain.usecase.CreateUserUseCase
 import domain.usecase.GetUserInfoUseCase
-import domain.usecase.OAuthRegisterUserUseCase
+import domain.usecase.RefreshAccessTokenUseCase
 import domain.usecase.RegisterApplicationDiasporaCase
-import org.openqa.selenium.Capabilities
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriverService
-import org.openqa.selenium.remote.DesiredCapabilities
-import org.openqa.selenium.remote.RemoteWebDriver
-import java.net.URL
+import domain.usecase.SendMessageUseCase
+import domain.usecase.TruncateUsersCase
 import javax.inject.Inject
 
 class SocialInteractionSimulation {
@@ -26,29 +28,93 @@ class SocialInteractionSimulation {
     lateinit var userProvider: DiProvider<HashMap<Int, Person>>
 
     @Inject
-    lateinit var oAuthUseCase: OAuthRegisterUserUseCase
-
-    @Inject
     lateinit var getUserInfoUseCase: GetUserInfoUseCase
 
     @Inject
     lateinit var createUserUseCase: CreateUserUseCase
 
     @Inject
+    lateinit var truncateUsersCase: TruncateUsersCase
+
+    @Inject
+    lateinit var createConversationUseCase: CreateConversationUseCase
+
+    @Inject
+    lateinit var createAspectUseCase: CreateAspectUseCase
+
+    @Inject
+    lateinit var createContactUseCase: CreateContactUseCase
+
+    @Inject
+    lateinit var messageEventSender: MessageEventSender
+
+    @Inject
+    lateinit var sendMessageUseCase: SendMessageUseCase
+
+    @Inject
+    lateinit var refreshAccessTokenUseCase: RefreshAccessTokenUseCase
+
+    @Inject
     lateinit var registerApplicationDiasporaCase: RegisterApplicationDiasporaCase
 
     fun startSimulation() {
 
-//        val users = userProvider.provide()
+        truncateUsersCase.execute()
+        registerApplicationDiasporaCase.execute()
 
-//        LogHelper.logI(getUserInfoUseCase.exec())
+        val usersMap = userProvider.provide()
+        val users = usersMap.values.toList()
 
-//        users.forEach { createUserUseCase.exec(it.value) }
+        users.forEach {
 
-//        createUserUseCase.exec(users.values.first())
+            createUserUseCase.exec(it)
+            createAspectUseCase.execute(it)
+        }
 
-        System.setProperty("webdriver.gecko.driver", "/usr/bin/geckodriver")
+        users.forEach { mainUser ->
 
-        oAuthUseCase.exec(null)
+            AppConstant.CURRENT_USER_TOKEN = mainUser.authToken
+
+            users.forEach sub@{
+
+                if (it == mainUser) return@sub
+
+                createContactUseCase.execute(mainUser.aspectId!!, it.diasporaId!!)
+            }
+        }
+
+        users.forEach { person ->
+
+            AppConstant.CURRENT_USER_TOKEN = person.authToken.orEmpty()
+
+            person.relationshipIds.keys.forEach { userId ->
+
+                val user = users.find { it.id == userId }
+
+                if (user?.relationshipIds?.get(person.id).isNullOrBlank()) {
+
+                    val conversation = createConversationUseCase.execute(
+                        ConversationDomain(
+                            subject = "Conversation ${person.name} and ${user?.name}",
+                            recipients = listOf(
+                                user?.diasporaId!!
+                            ),
+                            startMessage = "Hello! ${user.name}"
+                        )
+                    )
+
+                    person.relationshipIds[user.id] = conversation.guid
+                    user.relationshipIds[person.id] = conversation.guid
+                }
+            }
+        }
+
+        LogHelper.logSeparator()
+        LogHelper.logSeparator()
+        LogHelper.logSeparator()
+        LogHelper.logD("count = ${usersMap.keys.count()}")
+        LogHelper.logSeparator()
+
+        messageEventSender.generateAndSendMessageEvents(usersMap)
     }
 }

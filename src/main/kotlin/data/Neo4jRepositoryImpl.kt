@@ -33,13 +33,13 @@ class Neo4jRepositoryImpl @Inject constructor (
 
     private fun setRelationship(userId: Int) {
 
-        val result = neo4jSession.run("MATCH (p:Person {id: \"$userId\"})-[r:KNOW]->(e:Person) return e")
+        val result = neo4jSession.run("MATCH (p:Person {id: \"$userId\"})-[r:Network]->(e:Person) return e")
 
         while (result.hasNext()) {
 
             val person = neo4jDeserialization.getPerson(result.next().get(0).asNode())
 
-            userMap[userId]?.relationshipIds?.add(person.id)
+            userMap[userId]?.relationshipIds?.put(person.id, "")
         }
     }
 

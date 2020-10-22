@@ -1,12 +1,20 @@
 package domain
 
 import data.data_source.api.model.register.OAuthResponse
+import data.data_source.api.model.response.AccessTokenResponse
+import java.io.File
+import java.io.FileWriter
 
 interface OAuthRegistrationRepository {
 
-    fun registerApplication(): OAuthResponse
+    val fileLogs: File
+    val writerLogs: FileWriter
 
-    fun getAuthenticateCode(): String
+    fun registerApplication(): OAuthResponse?
 
-    fun getAccessToken(code: String): String
+    fun getAuthenticateCode(login: String, password: String): String?
+
+    fun getAccessToken(code: String): AccessTokenResponse?
+
+    fun refreshAccessToken(refresh: String): AccessTokenResponse?
 }

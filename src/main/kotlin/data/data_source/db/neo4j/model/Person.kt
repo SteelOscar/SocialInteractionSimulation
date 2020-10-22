@@ -10,8 +10,9 @@ data class Person(
     val age: Int,
     val socialRole: List<String>,
     val profRole: String,
-    val relationshipIds: HashSet<Int>
-) {
-
-    var authToken: String? = null
-}
+    val relationshipIds: HashMap<Int,String>,
+    var authToken: String = "",
+    var refreshToken: String = "",
+    var diasporaId: String? = "",
+    var aspectId: Int? = 0
+)

@@ -1,7 +1,5 @@
 package data.data_source.db.postgres
 
-import data.data_source.db.postgres.model.UserProfile
-
 interface PostgresInteractor {
 
     val username: String
@@ -13,11 +11,5 @@ interface PostgresInteractor {
     val dataBase: String
         get() = "diaspora_development"
 
-    fun insertUser(user: UserProfile)
-
-    fun getUser(id: Int): UserProfile
-
-    fun getLastUser(): UserProfile
-
-    fun removeUser(username: String)
+    fun clearUsers()
 }

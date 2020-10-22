@@ -4,7 +4,7 @@ import java.util.Date
 
 object LogHelper {
 
-    private const val separator = "-------------------------------------------------------------------------------------------"
+    private const val separator = "-----------------------------------------------------------------------------------------------------------------------------"
 
     fun logI(message: Any) = log(message, "Info")
     fun logE(message: Any) = log(message, "Error")
@@ -19,6 +19,6 @@ object LogHelper {
 
     fun logSeparator() {
 
-        println("$separator$separator")
+        println("$separator")
     }
 }

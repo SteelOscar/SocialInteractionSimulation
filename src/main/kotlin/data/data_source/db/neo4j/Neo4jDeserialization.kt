@@ -12,13 +12,13 @@ class Neo4jDeserialization @Inject constructor() {
         Person(
             get("id").asString().toInt(),
             get("name").asString(),
-            get("surname").asString(),
+            get("patronymic").asString(),
             formatGender(get("gender").asString()),
             get("born").asString(),
             get("age").asString().toInt(),
-            get("social_role").asString().split(','),
-            get("prof_role").asString(),
-            hashSetOf()
+            get("socialStatus").asString().split(','),
+            get("profession").asString(),
+            hashMapOf()
         )
     }
 

@@ -1,15 +1,18 @@
 package data
 
+import common.AppConstant
 import common.getModel
 import common.patchModel
 import common.postModel
 import data.data_source.api.ApiInteractor
+import data.data_source.api.model.body.AspectBody
+import data.data_source.api.model.body.CreateContactBody
 import data.data_source.api.model.body.MessageBody
+import data.data_source.api.model.response.AspectResponse
 import data.data_source.api.model.response.Conversation
 import data.data_source.api.model.response.Message
 import data.data_source.api.model.response.UserProfile
 import data.data_source.db.neo4j.model.Person
-import data.data_source.db.postgres.PostgresInteractor
 import data.mapper.ConversationDomainToBodyMapper
 import data.mapper.UpdateUserDomainToBodyMapper
 import domain.NetworkRepository
@@ -21,7 +24,6 @@ import javax.inject.Inject
 class NetworkRepositoryImpl @Inject constructor(
 
     private val apiInteractor: ApiInteractor,
-    private val postgresInteractor: PostgresInteractor,
     private val conversationMapper: ConversationDomainToBodyMapper,
     private val updateUserMapper: UpdateUserDomainToBodyMapper,
     private val sshInteractor: SshInteractor
@@ -32,7 +34,11 @@ class NetworkRepositoryImpl @Inject constructor(
 
         return apiInteractor.postModel(
             url = "/api/v1/conversations/${model.guid}/messages",
-            body = MessageBody(message = model.message)
+            body = MessageBody(message = model.message),
+            headers = hashMapOf(
+                "SenderId" to model.senderId,
+                "RecipientId" to model.recipientId
+            )
         )
     }
 
@@ -41,6 +47,23 @@ class NetworkRepositoryImpl @Inject constructor(
         return apiInteractor.postModel(
             url = "/api/v1/conversations",
             body = conversationMapper.invoke(domain = model)
+        )
+    }
+
+    override fun createAspect(body: AspectBody): AspectResponse {
+
+        return apiInteractor.postModel(
+            url = "/api/v1/aspects",
+            body =  body
+        )
+    }
+
+    override fun createContact(aspectId: Int, body: CreateContactBody) {
+
+        apiInteractor.post(
+            url = "/api/v1/aspects/$aspectId/contacts",
+            body = body,
+            headers = hashMapOf( "Authorization" to "Bearer ${AppConstant.CURRENT_USER_TOKEN}")
         )
     }
 
@@ -56,12 +79,7 @@ class NetworkRepositoryImpl @Inject constructor(
 
     override fun getAuthUser(): UserProfile {
 
-        return apiInteractor.getModel(
-            url = "/api/v1/user",
-            headers = mapOf(
-                "Authorization" to "Bearer YB5SUZP6EawrVy54sL4UHUDyB7wNyg"
-            )
-        )
+        return apiInteractor.getModel(url = "/api/v1/user")
     }
 
     override fun updateUserProfile(model: UpdateUserDomain): UserProfile {
