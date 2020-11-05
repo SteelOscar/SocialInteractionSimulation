@@ -1,6 +1,7 @@
 package main
 
 import domain.model.MessageDomain
+import domain.model.PostDomain
 import java.util.Date
 
 sealed class MessageEvent(
@@ -13,6 +14,7 @@ sealed class MessageEvent(
 
         time: Date,
 
+        val message: PostDomain,
         val token: String
 
     ) : MessageEvent(time)

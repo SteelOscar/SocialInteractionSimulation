@@ -3,17 +3,18 @@ package main
 import common.LogHelper
 import data.data_source.db.neo4j.model.Person
 import domain.model.MessageDomain
-import java.io.File
-import java.io.FileWriter
+import domain.model.PostDomain
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
 import java.util.PriorityQueue
 import javax.inject.Inject
 
-class MessageEventCreator @Inject constructor() {
+class MessageEventCreator @Inject constructor(
 
-    private val initDate = Date()
+    private val messagesGenerator: MessagesGenerator
+
+) {
 
     private val refreshTokensTime = arrayListOf<Pair<Date,Date>>()
 
@@ -72,6 +73,8 @@ class MessageEventCreator @Inject constructor() {
 
         LogHelper.logD("startDate: $startDate")
         LogHelper.logD("endDate: $endDate")
+
+        LogHelper.logD("countConversations: ${messagesGenerator.personConversationPairs.count()}")
     }
 
     fun getMessageEvents(): List<MessageEvent> {
@@ -86,48 +89,6 @@ class MessageEventCreator @Inject constructor() {
         endCalendar.time = startDate
         endCalendar.add(Calendar.DAY_OF_MONTH, 7)
         endDate = endCalendar.time
-
-        val updatePeriodMinutes = (users.count() * 16 ) / 60 + 1
-
-        (1 .. 7).forEach {
-
-            val initCalendar = GregorianCalendar()
-            initCalendar.time = initDate
-            initCalendar.add(Calendar.DAY_OF_MONTH, it)
-
-            val from = initCalendar.time
-
-            val (event, delay) = when (it % 2 != 0) {
-
-                true -> MessageEvent.RefreshTokens(from) to 1
-                false -> MessageEvent.NewAccessTokens(from) to updatePeriodMinutes
-            }
-
-            initCalendar.add(Calendar.MINUTE, delay)
-            val to = initCalendar.time
-
-            refreshTokensTime.add(from to to)
-
-            messageEvents.offer(event)
-        }
-
-        val fileRefreshEvents = File("/home/renat/Desktop/social network interaction/refreshEvents.txt")
-        val writer = FileWriter(fileRefreshEvents, false)
-
-        refreshTokensTime.forEach { pair ->
-
-            val event = messageEvents.find { it.time.time == pair.first.time }
-
-            val type = when(event) {
-
-                is MessageEvent.RefreshTokens -> "refresh tokens"
-                is MessageEvent.NewAccessTokens -> "generating tokens"
-                else -> "null"
-            }
-
-            writer.write("type: $type, from: ${pair.first.toLocaleString()}, to: ${pair.second.toLocaleString()}\n")
-        }
-        writer.close()
     }
 
     private fun validateRelationships(usersMap: Collection<Person>): Boolean {
@@ -155,34 +116,67 @@ class MessageEventCreator @Inject constructor() {
 
                 val recipient = users.getValue(id)
 
-                val event = MessageEvent.ConversationMessageEvent(
-
-                    message = MessageDomain(
-
-                        guid = guid,
-                        senderId = it.id.toString(),
-                        recipientId = id.toString(),
-                        message = "Message from ${it.name} to ${recipient.name}"
-                    ),
-                    time = nextMessageTime,
-                    token = it.authToken
+                val messages = messagesGenerator.getMessagesByConversation(
+                    from = it,
+                    to = recipient,
+                    guid = guid
                 )
 
-                val responseEvent = MessageEvent.ConversationMessageEvent(
+                when ((0..1000).random() % 2 != 0) {
 
-                    message = MessageDomain(
+                    true -> {
 
-                        guid = guid,
-                        senderId = id.toString(),
-                        recipientId = it.id.toString(),
-                        message = "Response from ${recipient.name} to ${it.name}"
-                    ),
-                    time = getResponseEventTime(recipient.age, nextMessageTime),
-                    token = recipient.authToken
-                )
+                        val event = MessageEvent.PublicPostEvent(
 
-                messageEvents.offer(event)
-                messageEvents.offer(responseEvent)
+                            message = PostDomain(
+
+                                message = messages.first,
+                                senderId = it.id.toString(),
+                                aspect = it.aspectId!!
+                            ),
+                            time = nextMessageTime,
+                            token = it.authToken
+                        )
+
+                        messageEvents.offer(event)
+                    }
+
+                    false -> {
+
+                        val event = MessageEvent.ConversationMessageEvent(
+
+                            message = MessageDomain(
+
+                                guid = guid,
+                                senderId = it.id.toString(),
+                                recipientId = id.toString(),
+                                message = messages.first
+                            ),
+                            time = nextMessageTime,
+                            token = it.authToken
+                        )
+
+                        messageEvents.offer(event)
+
+                        if (messages.second != null) {
+
+                            val responseEvent = MessageEvent.ConversationMessageEvent(
+
+                                message = MessageDomain(
+
+                                    guid = guid,
+                                    senderId = id.toString(),
+                                    recipientId = it.id.toString(),
+                                    message = messages.second ?: "Default response"
+                                ),
+                                time = getResponseEventTime(recipient.age, nextMessageTime),
+                                token = recipient.authToken
+                            )
+
+                            messageEvents.offer(responseEvent)
+                        }
+                    }
+                }
 
                 updateNextMessageTime()
             }
@@ -194,35 +188,11 @@ class MessageEventCreator @Inject constructor() {
         val calendar = GregorianCalendar()
         calendar.time = currentTime
 
-        when (currentTime.hours) {
+        calendar.add(Calendar.MINUTE, (1..5).random())
 
-            in 0 .. 7 -> {
+        nextMessageTime = calendar.time
 
-                val nightRange = when(age) {
-
-                    in 0..15 -> 8..10
-                    else -> 2..8
-                }
-
-                calendar.add(Calendar.HOUR, nightRange.random())
-                calendar.set(Calendar.MINUTE, (0..60).random())
-            }
-            else -> {
-
-                calendar.add(Calendar.HOUR, (0..1).random())
-                calendar.add(Calendar.MINUTE, (5..60).random())
-            }
-        }
-
-        if (calendar.time.after(endDate)) {
-
-            calendar.time.time = currentTime.time + (calendar.time.time - currentTime.time) / 4
-        }
-
-        if (validateSendTime(calendar)) {
-
-            calendar.add(Calendar.MINUTE, (0 .. 100).random() / 10)
-        }
+        currentMessageCount++
 
         return calendar.time
     }
@@ -235,21 +205,19 @@ class MessageEventCreator @Inject constructor() {
         val needMessageCount = statisticEventParams.getCurrentHourMessageCount(nextMessageTime)
         val remainingSeconds = 3600 - nextMessageTime.minutes * 60 - nextMessageTime.seconds
 
-        when (currentHourMessageCount < needMessageCount) {
+        when (getCurrentMessageCount(nextMessageTime) < needMessageCount) {
 
             true -> {
 
                 val delay = remainingSeconds / (needMessageCount - currentHourMessageCount)
 
                 calendar.add(Calendar.SECOND, (0 .. delay).random())
-                currentHourMessageCount++
             }
             false -> {
 
                 calendar.add(Calendar.HOUR, 1)
                 calendar.set(Calendar.MINUTE, 0)
                 calendar.set(Calendar.SECOND, 0)
-                currentHourMessageCount = 0
             }
         }
 
@@ -272,5 +240,13 @@ class MessageEventCreator @Inject constructor() {
         }
 
         return false
+    }
+
+    private fun getCurrentMessageCount(date: Date): Int {
+
+        return messageEvents.filter {
+
+            it.time.day == date.day && it.time.hours == date.hours
+        }.count()
     }
 }

@@ -29,6 +29,6 @@ class DiasporaApi : DefaultApi20() {
     }
 
     override fun getAccessTokenExtractor(): TokenExtractor<OAuth2AccessToken> {
-        return OAuth2AccessTokenExtractor.instance()
+        return DiasporaApiTokenExtractor
     }
 }

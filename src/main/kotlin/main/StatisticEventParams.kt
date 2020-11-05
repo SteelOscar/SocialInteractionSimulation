@@ -13,7 +13,7 @@ class StatisticEventParams(
      * 20 - message count for person per day
      * 7 - day count (week)
      */
-    val totalMessageEventCount = usersCount * 20 * 7
+    val totalMessageEventCount = usersCount * 6 * 7
 
     private val mondayMessageEventCount = (totalMessageEventCount * 0.144).toInt()
     private val tuesdayMessageEventCount = (totalMessageEventCount * 0.137).toInt()

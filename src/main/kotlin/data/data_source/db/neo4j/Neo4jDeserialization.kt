@@ -12,7 +12,7 @@ class Neo4jDeserialization @Inject constructor() {
         Person(
             get("id").asString().toInt(),
             get("name").asString(),
-            get("patronymic").asString(),
+            get("surname").asString(),
             formatGender(get("gender").asString()),
             get("born").asString(),
             get("age").asString().toInt(),

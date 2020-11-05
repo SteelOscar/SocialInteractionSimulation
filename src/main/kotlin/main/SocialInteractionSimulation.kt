@@ -6,6 +6,7 @@ import data.data_source.db.neo4j.model.Person
 import di.DaggerAppComponent
 import di.DiProvider
 import domain.model.ConversationDomain
+import domain.model.PostDomain
 import domain.usecase.CreateAspectUseCase
 import domain.usecase.CreateContactUseCase
 import domain.usecase.CreateConversationUseCase
@@ -14,7 +15,9 @@ import domain.usecase.GetUserInfoUseCase
 import domain.usecase.RefreshAccessTokenUseCase
 import domain.usecase.RegisterApplicationDiasporaCase
 import domain.usecase.SendMessageUseCase
+import domain.usecase.SendPostUseCase
 import domain.usecase.TruncateUsersCase
+import domain.usecase.UpdateTokensExpiresCase
 import javax.inject.Inject
 
 class SocialInteractionSimulation {
@@ -55,6 +58,9 @@ class SocialInteractionSimulation {
     lateinit var refreshAccessTokenUseCase: RefreshAccessTokenUseCase
 
     @Inject
+    lateinit var updateTokensExpiresCase: UpdateTokensExpiresCase
+
+    @Inject
     lateinit var registerApplicationDiasporaCase: RegisterApplicationDiasporaCase
 
     fun startSimulation() {
@@ -71,14 +77,17 @@ class SocialInteractionSimulation {
             createAspectUseCase.execute(it)
         }
 
+        updateTokensExpiresCase.execute()
+
         users.forEach { mainUser ->
 
             AppConstant.CURRENT_USER_TOKEN = mainUser.authToken
 
             users.forEach sub@{
 
-                if (it == mainUser) return@sub
+                if (it.diasporaId == mainUser.diasporaId) return@sub
 
+                LogHelper.logD("mainUser: $mainUser, contact: $it")
                 createContactUseCase.execute(mainUser.aspectId!!, it.diasporaId!!)
             }
         }

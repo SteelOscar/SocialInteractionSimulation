@@ -29,6 +29,6 @@ object AppConstant {
     const val REDIRECT_URI = "http://192.168.1.130:65080"
     const val LOGIN_URL = "http://192.168.1.10:3000/users/sign_in"
     val AUTHENTICATION_CODE_URL
-        get() = "${BASE_URL_API}api/openid_connect/authorizations/new?response_type=code&client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URI&scope=openid%20public%3Aread%20conversations%20profile%20contacts:modify"
+        get() = "${BASE_URL_API}api/openid_connect/authorizations/new?response_type=code&client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URI&scope=openid%20private:read%20private:modify%20contacts:read%20contacts:modify%20public:modify%20conversations%20profile"
     const val ACCESS_TOKEN_URL = "${BASE_URL_API}api/openid_connect/access_tokens"
 }

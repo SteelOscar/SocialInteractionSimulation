@@ -8,6 +8,7 @@ import data.data_source.api.ApiInteractor
 import data.data_source.api.model.body.AspectBody
 import data.data_source.api.model.body.CreateContactBody
 import data.data_source.api.model.body.MessageBody
+import data.data_source.api.model.body.PostBody
 import data.data_source.api.model.response.AspectResponse
 import data.data_source.api.model.response.Conversation
 import data.data_source.api.model.response.Message
@@ -18,6 +19,7 @@ import data.mapper.UpdateUserDomainToBodyMapper
 import domain.NetworkRepository
 import domain.model.ConversationDomain
 import domain.model.MessageDomain
+import domain.model.PostDomain
 import domain.model.UpdateUserDomain
 import javax.inject.Inject
 
@@ -60,11 +62,14 @@ class NetworkRepositoryImpl @Inject constructor(
 
     override fun createContact(aspectId: Int, body: CreateContactBody) {
 
-        apiInteractor.post(
-            url = "/api/v1/aspects/$aspectId/contacts",
-            body = body,
-            headers = hashMapOf( "Authorization" to "Bearer ${AppConstant.CURRENT_USER_TOKEN}")
-        )
+        runCatching {
+
+            apiInteractor.post(
+                url = "/api/v1/aspects/$aspectId/contacts",
+                body = body,
+                headers = hashMapOf( "Authorization" to "Bearer ${AppConstant.CURRENT_USER_TOKEN}")
+            )
+        }
     }
 
     override fun createUser(user: Person) {
@@ -88,5 +93,25 @@ class NetworkRepositoryImpl @Inject constructor(
             url = "/api/v1/user",
             body = updateUserMapper.invoke(domain = model)
         )
+    }
+
+    override fun sendPost(model: PostDomain) {
+
+        runCatching {
+
+            val tokenHeader = hashMapOf("Authorization" to "Bearer ${AppConstant.CURRENT_USER_TOKEN}")
+
+            tokenHeader["SenderId"] = model.senderId
+
+            apiInteractor.post(
+                url = "/api/v1/posts",
+                body = PostBody(
+
+                    body = model.message,
+                    aspects = listOf(model.aspect)
+                ),
+                headers = tokenHeader
+            )
+        }
     }
 }

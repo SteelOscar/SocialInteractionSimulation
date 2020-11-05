@@ -12,4 +12,6 @@ interface PostgresInteractor {
         get() = "diaspora_development"
 
     fun clearUsers()
+
+    fun updateTokensExpires()
 }

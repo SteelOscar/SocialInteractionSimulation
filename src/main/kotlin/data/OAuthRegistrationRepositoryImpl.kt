@@ -12,9 +12,8 @@ import data.data_source.api.model.response.AccessTokenResponse
 import di.DiProvider
 import domain.OAuthRegistrationRepository
 import org.openqa.selenium.By
+import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.firefox.FirefoxDriver
-import java.io.File
-import java.io.FileWriter
 import javax.inject.Inject
 
 class OAuthRegistrationRepositoryImpl @Inject constructor(
@@ -30,8 +29,6 @@ class OAuthRegistrationRepositoryImpl @Inject constructor(
             .callback(AppConstant.REDIRECT_URI)
             .build(DiasporaApi.instance)
     }
-    override val fileLogs = File("/home/renat/Desktop/social network interaction/logs.txt")
-    override val writerLogs = FileWriter(fileLogs, false)
 
     override fun registerApplication(): OAuthResponse? {
 
@@ -52,91 +49,73 @@ class OAuthRegistrationRepositoryImpl @Inject constructor(
 
     override fun getAuthenticateCode(login: String, password: String): String? {
 
-        runCatching {
+        val driver = FirefoxDriver()
 
-            val driver = FirefoxDriver()
+        driver.get(AppConstant.LOGIN_URL)
 
-            driver.get(AppConstant.LOGIN_URL)
+        val loginView = driver.findElementById("user_username")
+        val passwordView = driver.findElementById("user_password")
+        val loginButtonView = driver.findElementsByName("commit")[0]
 
-            val loginView = driver.findElementById("user_username")
-            val passwordView = driver.findElementById("user_password")
-            val loginButtonView = driver.findElementsByName("commit")[0]
+        loginView.sendKeys(login)
+        passwordView.sendKeys(password)
+        loginButtonView.click()
 
-            loginView.sendKeys(login)
-            passwordView.sendKeys(password)
-            loginButtonView.click()
+        driver.navigate().to(AppConstant.AUTHENTICATION_CODE_URL)
 
-            driver.navigate().to(AppConstant.AUTHENTICATION_CODE_URL)
+        val approveButtonView = driver.findElements(By.className("approval-button"))[1]
 
-            val approveButtonView = driver.findElements(By.className("approval-button"))[1]
+        runCatching { approveButtonView.click() }.onFailure {
 
-            runCatching { approveButtonView.click() }.onFailure {
+            return when (it) {
 
-                driver.quit()
+                is WebDriverException -> {
 
-                writerLogs.write("authCode:secondCatch ${it.message}\n")
+                    driver.quit()
 
-                return it.message
-                    ?.substringAfter("code%3D")
-                    ?.substringBefore("&c=").orEmpty()
+                    LogHelper.logD("authCode: ${it.message}")
+                    LogHelper.logD("------------------------------\n")
+
+                    it.message
+                        ?.substringAfter("code%3D")
+                        ?.substringBefore("&c=").orEmpty()
+                }
+                else -> getAuthenticateCode(login, password)
             }
-        }.onFailure { writerLogs.write("authCode:firstCatch ${it.message}\n") }
+        }
 
         return null
     }
 
     override fun getAccessToken(code: String): AccessTokenResponse? {
 
-        runCatching { service.getAccessToken(code) }.onFailure {
+        val tokenResponse = service.getAccessToken(code)
 
+        LogHelper.logD("accessTokenSuccess: ${tokenResponse.accessToken}, code: $code")
+        LogHelper.logD("------------------------------")
 
-            writerLogs.write("accessCode:firstCatch ${it.message}\n")
+        return AccessTokenResponse(
 
-            runCatching {
-
-                LogHelper.logD(it.message.orEmpty())
-
-                val tokenResponse = it.message
-                    ?.substringAfter(": '")
-                    ?.removeSuffix("'")
-                    .orEmpty()
-
-                val response = tokenResponse.convertToModel<AccessTokenResponse>()
-
-                println("tokenResponse: $response")
-
-                return response
-            }.onFailure { writerLogs.write("accessCode:secondCatch ${it.message}\n") }
-        }
-
-        return null
+            accessToken = tokenResponse.accessToken,
+            refreshToken = tokenResponse.refreshToken,
+            tokenType = tokenResponse.tokenType,
+            expiresIn = tokenResponse.expiresIn
+        )
     }
 
     override fun refreshAccessToken(refresh: String): AccessTokenResponse? {
 
-        runCatching { service.refreshAccessToken(refresh) }.onFailure {
+        val tokenResponse = service.refreshAccessToken(refresh)
 
-            writerLogs.write("refreshAccess:firstCatch ${it.message}\n")
+        LogHelper.logD("refreshTokenSuccess: ${tokenResponse.accessToken}, code: $refresh")
+        LogHelper.logD("------------------------------")
 
-            runCatching {
+        return AccessTokenResponse(
 
-                val tokenResponse = it.message
-                    ?.substringAfter(": '")
-                    ?.removeSuffix("'")
-                    .orEmpty()
-
-                val response = tokenResponse.convertToModel<AccessTokenResponse>()
-
-                println("tokenResponse: $response")
-
-                return response
-            }.onFailure {
-
-                writerLogs.write("refreshAccess:firstCatch ${it.message}\n")
-                return null
-            }
-        }
-
-        return null
+            accessToken = tokenResponse.accessToken,
+            refreshToken = tokenResponse.refreshToken,
+            tokenType = tokenResponse.tokenType,
+            expiresIn = tokenResponse.expiresIn
+        )
     }
 }

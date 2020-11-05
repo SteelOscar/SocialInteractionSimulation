@@ -19,19 +19,9 @@ class OAuthRegisterUserUseCase @Inject constructor(
             password = "qazwsxed9"
         )
 
-        if (authCode == null) {
-
-            oAuthRegistrationRepository.writerLogs.write("errorUserAuthCode: $user")
-            exec(user)
-        }
+        if (authCode == null) exec(user)
 
         val accessTokenResponse = oAuthRegistrationRepository.getAccessToken(authCode!!)
-
-        if (accessTokenResponse == null) {
-
-            oAuthRegistrationRepository.writerLogs.write("errorUserAccessToken: $user")
-            exec(user)
-        }
 
         user.authToken = accessTokenResponse?.accessToken.orEmpty()
         user.refreshToken = accessTokenResponse?.refreshToken.orEmpty()

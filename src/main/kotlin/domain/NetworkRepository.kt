@@ -9,6 +9,7 @@ import data.data_source.api.model.response.UserProfile
 import data.data_source.db.neo4j.model.Person
 import domain.model.ConversationDomain
 import domain.model.MessageDomain
+import domain.model.PostDomain
 import domain.model.UpdateUserDomain
 
 interface NetworkRepository {
@@ -26,4 +27,6 @@ interface NetworkRepository {
     fun getAuthUser(): UserProfile
 
     fun updateUserProfile(model: UpdateUserDomain): UserProfile
+
+    fun sendPost(model: PostDomain)
 }
