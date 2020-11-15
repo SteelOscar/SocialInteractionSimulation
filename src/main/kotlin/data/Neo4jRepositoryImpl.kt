@@ -39,7 +39,10 @@ class Neo4jRepositoryImpl @Inject constructor (
 
             val person = neo4jDeserialization.getPerson(result.next().get(0).asNode())
 
-            userMap[userId]?.relationshipIds?.put(person.id, "")
+            if (userId != person.id) {
+
+                userMap[userId]?.relationshipIds?.put(person.id, "")
+            }
         }
     }
 

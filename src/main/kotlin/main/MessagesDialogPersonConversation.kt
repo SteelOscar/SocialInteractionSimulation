@@ -24,6 +24,15 @@ class MessagesDialogPersonConversation {
 
     fun updateDialogs() {
 
+        val builder = ProcessBuilder()
+
+        builder.command("bash", "-c", "python3 /home/renat/IdeaProjects/SocialInteractionSimulation/DialogGenerate.py")
+
+        val process = builder.start()
+
+        process.waitFor()
+        process.destroy()
+
         commonDialogPairs = getMessagePairsFromDialog("CommonDialog.txt")
         engineerDialogPairs = getMessagePairsFromDialog("EngineerDialog.txt")
         itDialogPairs = getMessagePairsFromDialog("ITDialog.txt")
@@ -37,7 +46,7 @@ class MessagesDialogPersonConversation {
 
     private fun getMessagePairsFromDialog(dialogFileName: String): Queue<Pair<String,String?>> {
 
-        val targetFile = File("/home/renat/Desktop/dialogs/$dialogFileName")
+        val targetFile = File("/home/renat/IdeaProjects/SocialInteractionSimulation/dialogs/$dialogFileName")
         val fileReader = FileReader(targetFile)
         val lines = fileReader.readLines()
         fileReader.close()

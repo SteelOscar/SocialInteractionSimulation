@@ -10,6 +10,7 @@ data class Person(
     val age: Int,
     val socialRole: List<String>,
     val profRole: String,
+    val actions: List<Action>,
     val relationshipIds: HashMap<Int,String>,
     var authToken: String = "",
     var refreshToken: String = "",

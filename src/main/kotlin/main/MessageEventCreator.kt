@@ -48,11 +48,46 @@ class MessageEventCreator @Inject constructor(
 
         this.users = users
 
+        users.values.forEach { user ->
+
+            user.actions.forEach { action ->
+
+                val event = when (action.public) {
+
+                    true -> MessageEvent.PublicPostEvent(
+
+                        time = action.time,
+                        message = PostDomain(
+
+                            message = action.message,
+                            senderId = user.id.toString(),
+                            aspect = user.aspectId!!
+                        ),
+                        token = user.authToken
+                    )
+                    false -> MessageEvent.ConversationMessageEvent(
+
+                        time = action.time,
+                        message = MessageDomain(
+
+                            guid = user.relationshipIds[action.recipientId.toInt()]!!,
+                            senderId = user.id.toString(),
+                            recipientId = action.recipientId,
+                            message = action.message
+                        ),
+                        token = user.authToken
+                    )
+                }
+
+                messageEvents.offer(event)
+            }
+        }
+
         init()
 
         val firstMessageCalendar = GregorianCalendar()
         firstMessageCalendar.time = startDate
-        firstMessageCalendar.add(Calendar.MINUTE, 1)
+        firstMessageCalendar.add(Calendar.MINUTE, 5)
         nextMessageTime = firstMessageCalendar.time
 
         statisticEventParams = StatisticEventParams(users.count())

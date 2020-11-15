@@ -40,9 +40,11 @@ class MessagesGenerator @Inject constructor() {
     private fun getDialog(fromRole: String, to: String) = when (fromRole) {
 
         "Рыболов",
+        "Работник колхоза",
         "Фермер" -> when(to) {
 
             "Фермер",
+            "Работник колхоза",
             "Рыболов" -> "AgriculturalDialog"
             else -> "CommonDialog"
         }
@@ -157,6 +159,9 @@ class MessagesGenerator @Inject constructor() {
         "Повар",
         "Продавец",
         "Менеджер",
+        "Работние сельского и лесного хозяйства",
+        "Специалисты высшего уровня квалификации",
+        "Рабочие промышленности",
         "Пенсионер" -> "CommonDialog"
         else -> error("non-existing prof role $fromRole")
     }
