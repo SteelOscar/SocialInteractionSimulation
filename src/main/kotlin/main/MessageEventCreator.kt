@@ -72,7 +72,7 @@ class MessageEventCreator @Inject constructor(
 
                             guid = user.relationshipIds[action.recipientId.toInt()]!!,
                             senderId = user.diasporaId.orEmpty(),
-                            recipientId = users[action.recipientId.toInt()]?.diasporaId!!,
+                            recipientId = users[action.recipientId.toInt()]?.diasporaId.orEmpty(),
                             message = action.message
                         ),
                         token = user.authToken
@@ -256,7 +256,7 @@ class MessageEventCreator @Inject constructor(
 
                         guid = guid,
                         senderId = it.diasporaId.orEmpty(),
-                        recipientId = id.toString(),
+                        recipientId = users[id]?.diasporaId.orEmpty(),
                         message = messages.first
                     ),
                     time = nextMessageTime,
@@ -273,7 +273,7 @@ class MessageEventCreator @Inject constructor(
 
                             guid = guid,
                             senderId = users[id]?.diasporaId.orEmpty(),
-                            recipientId = it.id.toString(),
+                            recipientId = it.diasporaId.orEmpty(),
                             message = messages.second ?: "Default response"
                         ),
                         time = getResponseEventTime(recipient.age, nextMessageTime),

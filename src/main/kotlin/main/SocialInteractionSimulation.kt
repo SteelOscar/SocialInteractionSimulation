@@ -70,57 +70,57 @@ class SocialInteractionSimulation {
         val usersMap = userProvider.provide()
         val users = usersMap.values.toList()
 
-//        users.forEach {
-//
-//            createUserUseCase.exec(it)
-//            createAspectUseCase.execute(it)
-//        }
-//
-//        updateTokensExpiresCase.execute()
-//
-//        users.forEach { mainUser ->
-//
-//            AppConstant.CURRENT_USER_TOKEN = mainUser.authToken
-//
-//            users.forEach sub@{
-//
-//                if (it.diasporaId == mainUser.diasporaId) return@sub
-//
-//                createContactUseCase.execute(mainUser.aspectId!!, it.diasporaId!!)
-//            }
-//        }
-//
-//        users.forEach { person ->
-//
-//            AppConstant.CURRENT_USER_TOKEN = person.authToken.orEmpty()
-//
-//            person.relationshipIds.keys.forEach { userId ->
-//
-//                val user = users.find { it.id == userId }
-//
-//                if (user?.relationshipIds?.get(person.id).isNullOrBlank()) {
-//
-//                    val conversation = createConversationUseCase.execute(
-//                        ConversationDomain(
-//                            subject = "Conversation ${person.name} and ${user?.name}",
-//                            recipients = listOf(
-//                                user?.diasporaId!!
-//                            ),
-//                            startMessage = "Hello! ${user.name}"
-//                        )
-//                    )
-//
-//                    person.relationshipIds[user.id] = conversation.guid
-//                    user.relationshipIds[person.id] = conversation.guid
-//                }
-//            }
-//        }
-//
-//        LogHelper.logSeparator()
-//        LogHelper.logSeparator()
-//        LogHelper.logSeparator()
-//        LogHelper.logD("count = ${usersMap.keys.count()}")
-//        LogHelper.logSeparator()
+        users.forEach {
+
+            createUserUseCase.exec(it)
+            createAspectUseCase.execute(it)
+        }
+
+        updateTokensExpiresCase.execute()
+
+        users.forEach { mainUser ->
+
+            AppConstant.CURRENT_USER_TOKEN = mainUser.authToken
+
+            users.forEach sub@{
+
+                if (it.diasporaId == mainUser.diasporaId) return@sub
+
+                createContactUseCase.execute(mainUser.aspectId!!, it.diasporaId!!)
+            }
+        }
+
+        users.forEach { person ->
+
+            AppConstant.CURRENT_USER_TOKEN = person.authToken.orEmpty()
+
+            person.relationshipIds.keys.forEach { userId ->
+
+                val user = users.find { it.id == userId }
+
+                if (user?.relationshipIds?.get(person.id).isNullOrBlank()) {
+
+                    val conversation = createConversationUseCase.execute(
+                        ConversationDomain(
+                            subject = "Conversation ${person.name} and ${user?.name}",
+                            recipients = listOf(
+                                user?.diasporaId!!
+                            ),
+                            startMessage = "Hello! ${user.name}"
+                        )
+                    )
+
+                    person.relationshipIds[user.id] = conversation.guid
+                    user.relationshipIds[person.id] = conversation.guid
+                }
+            }
+        }
+
+        LogHelper.logSeparator()
+        LogHelper.logSeparator()
+        LogHelper.logSeparator()
+        LogHelper.logD("count = ${usersMap.keys.count()}")
+        LogHelper.logSeparator()
 
         messageEventSender.generateAndSendMessageEvents(usersMap)
     }
