@@ -1,11 +1,45 @@
 package main
 
 import data.data_source.db.neo4j.model.Person
+import java.io.File
+import java.io.FileReader
+import java.util.LinkedList
 import javax.inject.Inject
 
 class MessagesGenerator @Inject constructor() {
 
     val personConversationPairs = HashMap<String, MessagesDialogPersonConversation>()
+
+    private val postMessages = LinkedList<String>()
+
+    init {
+
+        updatePosts()
+    }
+
+    fun getPostMessage(): String {
+
+        if (postMessages.isEmpty()) updatePosts()
+
+        return postMessages.poll()
+    }
+
+    private fun updatePosts() {
+
+        val builder = ProcessBuilder()
+
+        builder.command("bash", "-c", "python3 /home/renat/IdeaProjects/SocialInteractionSimulation/DialogGenerate.py")
+
+        val process = builder.start()
+
+        process.waitFor()
+        process.destroy()
+
+        val targetFile = File("/home/renat/IdeaProjects/SocialInteractionSimulation/dialogs/Post.txt")
+        val fileReader = FileReader(targetFile)
+        postMessages.addAll(fileReader.readLines())
+        fileReader.close()
+    }
 
     fun getMessagesByConversation(from: Person, to: Person, guid: String): Pair<String, String?> {
 

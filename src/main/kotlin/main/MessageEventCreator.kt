@@ -221,13 +221,7 @@ class MessageEventCreator @Inject constructor(
 
         val recipient = users.getValue(id)
 
-        val messages = messagesGenerator.getMessagesByConversation(
-            from = it,
-            to = recipient,
-            guid = guid
-        )
-
-        when ((0..1000).random() % 2 != 0) {
+        when ((0 .. 100).random() in 0 .. AppConstant.postPercentage) {
 
             true -> {
 
@@ -235,7 +229,7 @@ class MessageEventCreator @Inject constructor(
 
                     message = PostDomain(
 
-                        message = messages.first,
+                        message = messagesGenerator.getPostMessage(),
                         senderId = it.diasporaId.orEmpty(),
                         aspect = it.aspectId!!
                     ),
@@ -247,6 +241,14 @@ class MessageEventCreator @Inject constructor(
             }
 
             false -> {
+
+                val messages = messagesGenerator.getMessagesByConversation(
+                    from = it,
+                    to = recipient,
+                    guid = guid
+                )
+
+                if ((0 .. 1000).random() % 2 == 0) return
 
                 val event = MessageEvent.ConversationMessageEvent(
 
