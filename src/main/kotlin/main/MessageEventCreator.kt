@@ -85,12 +85,12 @@ class MessageEventCreator @Inject constructor(
 
         init()
 
+        statisticEventParams = StatisticEventParams(users.count())
+
         val firstMessageCalendar = GregorianCalendar()
         firstMessageCalendar.time = startDate
-        firstMessageCalendar.add(Calendar.MINUTE, 3 * users.count() / 60)
+        firstMessageCalendar.add(Calendar.MINUTE, (statisticEventParams.totalMessageEventCount * 0.045).toInt() / 60)
         nextMessageTime = firstMessageCalendar.time
-
-        statisticEventParams = StatisticEventParams(users.count())
 
         while (nextMessageTime.time < endDate.time) {
 
@@ -121,8 +121,8 @@ class MessageEventCreator @Inject constructor(
         writerStatistics.appendln(LogHelper.separator)
         writerStatistics.appendln("Users count: ${users.count()}")
         writerStatistics.appendln("Total event count: ${messageEvents.count()}")
-        writerStatistics.appendln("Public posts count: ${messageEvents.filter { it is MessageEvent.PublicPostEvent }.count()}")
-        writerStatistics.appendln("Total private messages count: ${messageEvents.filter { it is MessageEvent.ConversationMessageEvent }.count()}")
+        writerStatistics.appendln("Public posts count: ${messageEvents.filterIsInstance<MessageEvent.PublicPostEvent>().count()}")
+        writerStatistics.appendln("Total private messages count: ${messageEvents.filterIsInstance<MessageEvent.ConversationMessageEvent>().count()}")
         writerStatistics.appendlnDayStat(Calendar.MONDAY)
         writerStatistics.appendlnDayStat(Calendar.TUESDAY)
         writerStatistics.appendlnDayStat(Calendar.WEDNESDAY)
@@ -175,14 +175,13 @@ class MessageEventCreator @Inject constructor(
 
     private fun getDayCount(day: Int): Int {
 
-        return messageEvents.filter {
-
+        return messageEvents.count {
             val calendar = GregorianCalendar()
 
             calendar.time = it.time
 
             calendar.get(Calendar.DAY_OF_WEEK) == day
-        }.count()
+        }
     }
 
     private fun getPostsPerDay(day: Int): Int {
@@ -211,79 +210,80 @@ class MessageEventCreator @Inject constructor(
 
     private fun createMessageEvents() {
 
-        users.values.forEach {
+        val it = users.values.random()
 
-            it.relationshipIds.forEach { (id, guid) ->
+        if (it.relationshipIds.isEmpty()) return
 
-                if (nextMessageTime.time >= endDate.time) return
+        val id = it.relationshipIds.keys.random()
+        val guid = it.relationshipIds[id]!!
 
-                val recipient = users.getValue(id)
+        if (nextMessageTime.time >= endDate.time) return
 
-                val messages = messagesGenerator.getMessagesByConversation(
-                    from = it,
-                    to = recipient,
-                    guid = guid
+        val recipient = users.getValue(id)
+
+        val messages = messagesGenerator.getMessagesByConversation(
+            from = it,
+            to = recipient,
+            guid = guid
+        )
+
+        when ((0..1000).random() % 2 != 0) {
+
+            true -> {
+
+                val event = MessageEvent.PublicPostEvent(
+
+                    message = PostDomain(
+
+                        message = messages.first,
+                        senderId = it.diasporaId.orEmpty(),
+                        aspect = it.aspectId!!
+                    ),
+                    time = nextMessageTime,
+                    token = it.authToken
                 )
 
-                when ((0..1000).random() % 2 != 0) {
+                messageEvents.offer(event)
+            }
 
-                    true -> {
+            false -> {
 
-                        val event = MessageEvent.PublicPostEvent(
+                val event = MessageEvent.ConversationMessageEvent(
 
-                            message = PostDomain(
+                    message = MessageDomain(
 
-                                message = messages.first,
-                                senderId = it.diasporaId.orEmpty(),
-                                aspect = it.aspectId!!
-                            ),
-                            time = nextMessageTime,
-                            token = it.authToken
-                        )
+                        guid = guid,
+                        senderId = it.diasporaId.orEmpty(),
+                        recipientId = id.toString(),
+                        message = messages.first
+                    ),
+                    time = nextMessageTime,
+                    token = it.authToken
+                )
 
-                        messageEvents.offer(event)
-                    }
+                messageEvents.offer(event)
 
-                    false -> {
+                if (messages.second != null) {
 
-                        val event = MessageEvent.ConversationMessageEvent(
+                    val responseEvent = MessageEvent.ConversationMessageEvent(
 
-                            message = MessageDomain(
+                        message = MessageDomain(
 
-                                guid = guid,
-                                senderId = it.diasporaId.orEmpty(),
-                                recipientId = id.toString(),
-                                message = messages.first
-                            ),
-                            time = nextMessageTime,
-                            token = it.authToken
-                        )
+                            guid = guid,
+                            senderId = users[id]?.diasporaId.orEmpty(),
+                            recipientId = it.id.toString(),
+                            message = messages.second ?: "Default response"
+                        ),
+                        time = getResponseEventTime(recipient.age, nextMessageTime),
+                        token = recipient.authToken
+                    )
 
-                        messageEvents.offer(event)
-
-                        if (messages.second != null) {
-
-                            val responseEvent = MessageEvent.ConversationMessageEvent(
-
-                                message = MessageDomain(
-
-                                    guid = guid,
-                                    senderId = users[id]?.diasporaId.orEmpty(),
-                                    recipientId = it.id.toString(),
-                                    message = messages.second ?: "Default response"
-                                ),
-                                time = getResponseEventTime(recipient.age, nextMessageTime),
-                                token = recipient.authToken
-                            )
-
-                            messageEvents.offer(responseEvent)
-                        }
-                    }
+                    messageEvents.offer(responseEvent)
                 }
-
-                updateNextMessageTime()
             }
         }
+
+        updateNextMessageTime()
     }
 
     private fun getResponseEventTime(age: Int, currentTime: Date): Date {
