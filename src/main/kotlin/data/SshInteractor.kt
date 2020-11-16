@@ -3,6 +3,7 @@ package data
 import common.AppConstant
 import common.LogHelper
 import common.convertCyrillic
+import data.data_source.db.neo4j.model.Gender
 import data.data_source.db.neo4j.model.Person
 import kossh.impl.SSH
 import kossh.impl.SSHOptions
@@ -28,9 +29,14 @@ class SshInteractor @Inject constructor() {
         SSH.shell(options) {
 
             execute("cd ./diaspora")
+            val gender = when(user.gender) {
+
+                Gender.MAlE -> ""
+                Gender.FEMALE -> ""
+            }
             LogHelper.logD(execute(
-                "rails r $scriptPath ${(user.name + user.age).convertCyrillic()} $password" +
-                        " ${user.name} ${user.surname} ${user.gender} ${user.profRole} ${user.born}"
+                "rails r $scriptPath ${(user.name + user.surname + user.age).convertCyrillic()} $password" +
+                        " ${user.name} ${user.surname} $gender ${user.profRole} ${user.born}"
             ))
         }
     }

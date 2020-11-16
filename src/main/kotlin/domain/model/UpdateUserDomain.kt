@@ -2,8 +2,9 @@ package domain.model
 
 data class UpdateUserDomain(
 
-    val bio: String,
-    val birthday: String,
-    val gender: String,
-    val name: String
+    val bio: String? = null,
+    val birthday: String? = null,
+    val gender: String? = null,
+    val name: String? = null,
+    val publicProfileInfo: Boolean = true
 )

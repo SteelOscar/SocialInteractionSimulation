@@ -15,7 +15,7 @@ class OAuthRegisterUserUseCase @Inject constructor(
     fun exec(user: Person) {
 
         val authCode = oAuthRegistrationRepository.getAuthenticateCode(
-            login = (user.name + user.age).convertCyrillic(),
+            login = (user.name + user.surname + user.age).convertCyrillic(),
             password = "qazwsxed9"
         )
 

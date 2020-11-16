@@ -60,7 +60,7 @@ class MessageEventCreator @Inject constructor(
                         message = PostDomain(
 
                             message = action.message,
-                            senderId = user.id.toString(),
+                            senderId = user.diasporaId.orEmpty(),
                             aspect = user.aspectId!!
                         ),
                         token = user.authToken
@@ -71,8 +71,8 @@ class MessageEventCreator @Inject constructor(
                         message = MessageDomain(
 
                             guid = user.relationshipIds[action.recipientId.toInt()]!!,
-                            senderId = user.id.toString(),
-                            recipientId = action.recipientId,
+                            senderId = user.diasporaId.orEmpty(),
+                            recipientId = users[action.recipientId.toInt()]?.diasporaId!!,
                             message = action.message
                         ),
                         token = user.authToken

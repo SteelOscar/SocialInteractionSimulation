@@ -8,6 +8,6 @@ class UpdateUserDomainToBodyMapper @Inject constructor() : (UpdateUserDomain) ->
 
     override fun invoke(domain: UpdateUserDomain) = with(domain) {
 
-        UpdateUserBody(bio, birthday, gender, name)
+        UpdateUserBody(bio, birthday, gender, name, publicProfileInfo)
     }
 }

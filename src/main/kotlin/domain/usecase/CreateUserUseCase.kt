@@ -3,6 +3,7 @@ package domain.usecase
 import common.AppConstant
 import data.data_source.db.neo4j.model.Person
 import domain.NetworkRepository
+import domain.model.UpdateUserDomain
 import javax.inject.Inject
 
 class CreateUserUseCase @Inject constructor(
@@ -18,7 +19,9 @@ class CreateUserUseCase @Inject constructor(
         oAuthUseCase.exec(user)
 
         AppConstant.CURRENT_USER_TOKEN = user.authToken
-        val profile = networkRepository.getAuthUser()
+        val profile = networkRepository.updateUserProfile(
+            model = UpdateUserDomain(publicProfileInfo = true)
+        )
         user.diasporaId = profile.guid
     }
 }

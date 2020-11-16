@@ -1,11 +1,12 @@
 package data.data_source.api.model.body
 
 import com.google.gson.annotations.SerializedName
+import com.sun.org.apache.xpath.internal.operations.Bool
 
 data class UpdateUserBody(
 
     @SerializedName("bio")
-    val bio: String,
+    val bio: String?,
 
     /**
      * Date format ISO 8601
@@ -16,11 +17,14 @@ data class UpdateUserBody(
      *  and etc...
      */
     @SerializedName("birthday")
-    val birthday: String,
+    val birthday: String?,
 
     @SerializedName("gender")
-    val gender: String,
+    val gender: String?,
 
     @SerializedName("name")
-    val name: String
+    val name: String?,
+
+    @SerializedName("show_profile_info")
+    val showProfileInfo: Boolean
 )

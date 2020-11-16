@@ -14,6 +14,7 @@ import domain.usecase.GetUserInfoUseCase
 import domain.usecase.RefreshAccessTokenUseCase
 import domain.usecase.RegisterApplicationDiasporaCase
 import domain.usecase.SendMessageUseCase
+import domain.usecase.SetPublicProfileInfoCase
 import domain.usecase.TruncateUsersCase
 import domain.usecase.UpdateTokensExpiresCase
 import javax.inject.Inject

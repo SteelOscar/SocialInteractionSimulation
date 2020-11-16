@@ -63,7 +63,9 @@ class MessageEventSender @Inject constructor(
 
                             LogHelper.logD("Send message $it")
 
-                            val token = users[it.message.senderId.toInt()]?.authToken
+                            val token = users.values.find { person ->
+                                person.diasporaId == it.message.senderId
+                            }?.authToken
 
                             AppConstant.CURRENT_USER_TOKEN = token!!
                             sendMessageUseCase.execute(it.message)
@@ -90,7 +92,9 @@ class MessageEventSender @Inject constructor(
 
                             LogHelper.logD("Send post: $it")
 
-                            val token = users[it.message.senderId.toInt()]?.authToken
+                            val token = users.values.find { person ->
+                                person.diasporaId == it.message.senderId
+                            }?.authToken
 
                             AppConstant.CURRENT_USER_TOKEN = token!!
                             sendPostUseCase.execute(it.message)
