@@ -41,7 +41,8 @@ class NetworkRepositoryImpl @Inject constructor(
                 body = MessageBody(message = model.message),
                 headers = hashMapOf(
                     "SenderId" to model.senderId,
-                    "RecipientId" to model.recipientId
+                    "RecipientId" to model.recipientId,
+                    "Authorization" to "Bearer ${AppConstant.CURRENT_USER_TOKEN}"
                 )
             )
         }
