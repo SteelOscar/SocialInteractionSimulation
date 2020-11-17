@@ -14,7 +14,7 @@ import domain.model.UpdateUserDomain
 
 interface NetworkRepository {
 
-    fun sendMessage(model: MessageDomain): Message
+    fun sendMessage(model: MessageDomain)
 
     fun createConversation(model: ConversationDomain): Conversation
 

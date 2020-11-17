@@ -5,18 +5,24 @@ object AppConstant {
     /**
      * Database Neo4j
      */
-    const val BASE_URL_NEO4J = "bolt://192.168.1.30:"
-    const val USERNAME = "neo4j"
-    const val PASSWORD = "12345"
+    var NEO4J_HOST = ""
+
+    val BASE_URL_NEO4J
+        get() = "bolt://$NEO4J_HOST"
+    var USERNAME = "neo4j"
+    var PASSWORD = "12345"
 
     /**
      * Network
      */
-    const val BASE_URL_API = "http://192.168.1.10:3000/"
+    var DIASPORA_HOST = ""
 
-    const val BASE_URL_OAUTH = "http://192.168.1.10:3000/api/openid_connect"
-
-    var CURRENT_USER_TOKEN = "token"
+    val BASE_URL_API
+        get() = "http://$DIASPORA_HOST:3000/"
+    val BASE_URL_OAUTH
+        get() = "http://$DIASPORA_HOST:3000/api/openid_connect"
+    val LOGIN_URL
+        get() = "http://$DIASPORA_HOST:3000/users/sign_in"
 
     /**
      * Postgres DB
@@ -24,11 +30,37 @@ object AppConstant {
     const val POSTGRES_HOST = "192.168.1.10"
     const val POSTGRES_PORT = 5432
 
-    var CLIENT_ID = ""
-    var CLIENT_SECRET = ""
-    const val REDIRECT_URI = "http://192.168.1.130:65080"
-    const val LOGIN_URL = "http://192.168.1.10:3000/users/sign_in"
+    /**
+     * Started from ip
+     */
+    var LOCAL_IP = ""
+    val REDIRECT_URI
+        get() = "http://$LOCAL_IP:65080"
+
     val AUTHENTICATION_CODE_URL
         get() = "${BASE_URL_API}api/openid_connect/authorizations/new?response_type=code&client_id=$CLIENT_ID&redirect_uri=$REDIRECT_URI&scope=openid%20private:read%20private:modify%20contacts:read%20contacts:modify%20public:modify%20conversations%20profile%20profile:modify"
-    const val ACCESS_TOKEN_URL = "${BASE_URL_API}api/openid_connect/access_tokens"
+    val ACCESS_TOKEN_URL
+        get() = "${BASE_URL_API}api/openid_connect/access_tokens"
+
+    var CLIENT_ID = ""
+    var CLIENT_SECRET = ""
+    var CURRENT_USER_TOKEN = "token"
+
+    /**
+     * Statistics params
+     */
+    var daysCount = 7
+    var messageCountPerDay = 6
+    var postPercentage = 50
+
+    /**
+     * DAY COEFFICIENTS
+     */
+    var MONDAY = 0.144
+    var TUESDAY = 0.137
+    var WEDNESDAY = 0.139
+    var THURSDAY = 0.146
+    var FRIDAY = 0.137
+    var SATURDAY = 0.147
+    var SUNDAY = 0.15
 }

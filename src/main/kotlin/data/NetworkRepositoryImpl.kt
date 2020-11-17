@@ -32,16 +32,19 @@ class NetworkRepositoryImpl @Inject constructor(
 
 ) : NetworkRepository {
 
-    override fun sendMessage(model: MessageDomain): Message {
+    override fun sendMessage(model: MessageDomain) {
 
-        return apiInteractor.postModel(
-            url = "/api/v1/conversations/${model.guid}/messages",
-            body = MessageBody(message = model.message),
-            headers = hashMapOf(
-                "SenderId" to model.senderId,
-                "RecipientId" to model.recipientId
+        runCatching {
+
+            apiInteractor.post(
+                url = "/api/v1/conversations/${model.guid}/messages",
+                body = MessageBody(message = model.message),
+                headers = hashMapOf(
+                    "SenderId" to model.senderId,
+                    "RecipientId" to model.recipientId
+                )
             )
-        )
+        }
     }
 
     override fun createConversation(model: ConversationDomain): Conversation {

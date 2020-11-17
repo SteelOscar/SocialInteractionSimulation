@@ -166,7 +166,7 @@ class MessageEventCreator @Inject constructor(
                             message = PostDomain(
 
                                 message = messages.first,
-                                senderId = it.id.toString(),
+                                senderId = it.diasporaId.orEmpty(),
                                 aspect = it.aspectId!!
                             ),
                             time = nextMessageTime,
@@ -183,7 +183,7 @@ class MessageEventCreator @Inject constructor(
                             message = MessageDomain(
 
                                 guid = guid,
-                                senderId = it.id.toString(),
+                                senderId = it.diasporaId.orEmpty(),
                                 recipientId = id.toString(),
                                 message = messages.first
                             ),
@@ -200,7 +200,7 @@ class MessageEventCreator @Inject constructor(
                                 message = MessageDomain(
 
                                     guid = guid,
-                                    senderId = id.toString(),
+                                    senderId = users[id]?.diasporaId.orEmpty(),
                                     recipientId = it.id.toString(),
                                     message = messages.second ?: "Default response"
                                 ),

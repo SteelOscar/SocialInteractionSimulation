@@ -1,5 +1,14 @@
 package main
 
+import common.AppConstant.FRIDAY
+import common.AppConstant.MONDAY
+import common.AppConstant.SATURDAY
+import common.AppConstant.SUNDAY
+import common.AppConstant.THURSDAY
+import common.AppConstant.TUESDAY
+import common.AppConstant.WEDNESDAY
+import common.AppConstant.daysCount
+import common.AppConstant.messageCountPerDay
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
@@ -10,18 +19,18 @@ class StatisticEventParams(
 
 ) {
     /**
-     * 20 - message count for person per day
+     * 6 - message count for person per day
      * 7 - day count (week)
      */
-    val totalMessageEventCount = usersCount * 6 * 7
+    val totalMessageEventCount = usersCount * messageCountPerDay * daysCount
 
-    private val mondayMessageEventCount = (totalMessageEventCount * 0.144).toInt()
-    private val tuesdayMessageEventCount = (totalMessageEventCount * 0.137).toInt()
-    private val wednesdayMessageEventCount = (totalMessageEventCount * 0.139).toInt()
-    private val thursdayMessageEventCount = (totalMessageEventCount * 0.146).toInt()
-    private val fridayMessageEventCount = (totalMessageEventCount * 0.137).toInt()
-    private val saturdayMessageEventCount = (totalMessageEventCount * 0.147).toInt()
-    private val sundayMessageEventCount =(totalMessageEventCount * 0.15).toInt()
+    private val mondayMessageEventCount = (totalMessageEventCount * MONDAY).toInt()
+    private val tuesdayMessageEventCount = (totalMessageEventCount * TUESDAY).toInt()
+    private val wednesdayMessageEventCount = (totalMessageEventCount * WEDNESDAY).toInt()
+    private val thursdayMessageEventCount = (totalMessageEventCount * THURSDAY).toInt()
+    private val fridayMessageEventCount = (totalMessageEventCount * FRIDAY).toInt()
+    private val saturdayMessageEventCount = (totalMessageEventCount * SATURDAY).toInt()
+    private val sundayMessageEventCount =(totalMessageEventCount * SUNDAY).toInt()
 
     fun getCurrentHourMessageCount(currentTime: Date): Int {
 
