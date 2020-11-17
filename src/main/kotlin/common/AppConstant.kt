@@ -56,11 +56,11 @@ object AppConstant {
     /**
      * DAY COEFFICIENTS
      */
-    var MONDAY = 0.144
-    var TUESDAY = 0.137
-    var WEDNESDAY = 0.139
-    var THURSDAY = 0.146
-    var FRIDAY = 0.137
-    var SATURDAY = 0.147
-    var SUNDAY = 0.15
+    var MONDAY = 0.0
+    var TUESDAY = 0.0
+    var WEDNESDAY = 0.0
+    var THURSDAY = 0.0
+    var FRIDAY = 0.0
+    var SATURDAY = 0.0
+    var SUNDAY = 0.0
 }

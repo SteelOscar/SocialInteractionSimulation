@@ -6,34 +6,34 @@ import java.util.Date
 
 sealed class MessageEvent(
 
-    val time: Date
+    open val time: Date
 
 ) {
 
-    class PublicPostEvent(
+    data class PublicPostEvent(
 
-        time: Date,
+        override val time: Date,
 
         val message: PostDomain,
         val token: String
 
     ) : MessageEvent(time)
 
-    class RefreshTokens(
+    data class RefreshTokens(
 
-        time: Date
-
-    ) : MessageEvent(time)
-
-    class NewAccessTokens(
-
-        time: Date
+        override val time: Date
 
     ) : MessageEvent(time)
 
-    class ConversationMessageEvent(
+    data class NewAccessTokens(
 
-        time: Date,
+        override val time: Date
+
+    ) : MessageEvent(time)
+
+    data class ConversationMessageEvent(
+
+        override val time: Date,
 
         val message: MessageDomain,
         val token: String

@@ -18,10 +18,7 @@ class StatisticEventParams(
     usersCount: Int
 
 ) {
-    /**
-     * 6 - message count for person per day
-     * 7 - day count (week)
-     */
+
     val totalMessageEventCount = usersCount * messageCountPerDay * daysCount
 
     private val mondayMessageEventCount = (totalMessageEventCount * MONDAY).toInt()
@@ -32,35 +29,41 @@ class StatisticEventParams(
     private val saturdayMessageEventCount = (totalMessageEventCount * SATURDAY).toInt()
     private val sundayMessageEventCount =(totalMessageEventCount * SUNDAY).toInt()
 
+    private val hourPercents = mutableListOf(
+
+        (43 .. 46).random(),
+        (37 .. 43).random(),
+        (32 .. 38).random(),
+        (32 .. 38).random(),
+        (35 .. 41).random(),
+        (32 .. 38).random(),
+        (38 .. 44).random(),
+        (36 .. 42).random(),
+        (39 .. 45).random(),
+        (42 .. 48).random(),
+        (41 .. 47).random(),
+        (43 .. 49).random(),
+        (42 .. 48).random(),
+        (37 .. 43).random(),
+        (43 .. 49).random(),
+        (37 .. 43).random(),
+        (40 .. 46).random(),
+        (43 .. 49).random(),
+        (37 .. 43).random(),
+        (38 .. 44).random(),
+        (40 .. 46).random()
+    )
+
+    init {
+
+        hourPercents.add(((1000 - hourPercents.sum()) / 3) - (-2 .. 2).random())
+        hourPercents.add(((1000 - hourPercents.sum()) / 2) - (-2 .. 2).random())
+        hourPercents.add(1000 - hourPercents.sum())
+    }
+
     fun getCurrentHourMessageCount(currentTime: Date): Int {
 
-        val hourPercent = when(currentTime.hours) {
-
-            0 -> (40 .. 46).random() / 1000f
-            1 -> (37 .. 43).random() / 1000f
-            2 -> (32 .. 38).random() / 1000f
-            3 -> (32 .. 38).random() / 1000f
-            4 -> (35 .. 41).random() / 1000f
-            5 -> (32 .. 38).random() / 1000f
-            6 -> (38 .. 44).random() / 1000f
-            7 -> (36 .. 42).random() / 1000f
-            8 -> (39 .. 45).random() / 1000f
-            9 -> (42 .. 48).random() / 1000f
-            10 -> (41 .. 47).random() / 1000f
-            11 -> (43 .. 49).random() / 1000f
-            12 -> (42 .. 48).random() / 1000f
-            13 -> (37 .. 43).random() / 1000f
-            14 -> (43 .. 49).random() / 1000f
-            15 -> (37 .. 43).random() / 1000f
-            16 -> (40 .. 46).random() / 1000f
-            17 -> (43 .. 49).random() / 1000f
-            18 -> (37 .. 43).random() / 1000f
-            19 -> (38 .. 44).random() / 1000f
-            20 -> (40 .. 46).random() / 1000f
-            21 -> (41 .. 47).random() / 1000f
-            22 -> (40 .. 46).random() / 1000f
-            else -> (41 .. 47).random() / 1000f
-        }
+        val hourPercent = hourPercents[currentTime.hours] / 1000f
 
         val calendar = GregorianCalendar()
         calendar.time = currentTime

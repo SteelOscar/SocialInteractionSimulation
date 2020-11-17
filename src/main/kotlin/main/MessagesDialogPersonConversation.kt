@@ -1,6 +1,5 @@
 package main
 
-import common.LogHelper
 import java.io.File
 import java.io.FileReader
 import java.util.LinkedList
@@ -50,8 +49,6 @@ class MessagesDialogPersonConversation {
         val fileReader = FileReader(targetFile)
         val lines = fileReader.readLines()
         fileReader.close()
-
-        LogHelper.logD("$dialogFileName: $lines")
 
         return LinkedList<Pair<String,String?>>().apply {
 

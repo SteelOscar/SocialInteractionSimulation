@@ -1,6 +1,5 @@
 package main
 
-import common.LogHelper
 import data.data_source.db.neo4j.model.Person
 import javax.inject.Inject
 
@@ -17,8 +16,6 @@ class MessagesGenerator @Inject constructor() {
         val pairs = conversationPairs.getPairsByDialog(dialog)
 
         if (pairs.count() == 0) conversationPairs.updateDialogs()
-
-        LogHelper.logD("pairs: ${pairs.count()}")
 
         return conversationPairs.getPairsByDialog(dialog).poll()
     }

@@ -1,9 +1,12 @@
 package main
 
+import common.AppConstant
 import common.LogHelper
 import data.data_source.db.neo4j.model.Person
 import domain.model.MessageDomain
 import domain.model.PostDomain
+import java.io.File
+import java.io.FileWriter
 import java.util.Calendar
 import java.util.Date
 import java.util.GregorianCalendar
@@ -34,9 +37,6 @@ class MessageEventCreator @Inject constructor(
     private var messageEvents = PriorityQueue(comparator)
 
     private lateinit var nextMessageTime: Date
-
-    private var currentMessageCount = 0
-    private var currentHourMessageCount = 0
 
     fun setUsers(users: Map<Int, Person>) {
 
@@ -87,16 +87,18 @@ class MessageEventCreator @Inject constructor(
 
         val firstMessageCalendar = GregorianCalendar()
         firstMessageCalendar.time = startDate
-        firstMessageCalendar.add(Calendar.MINUTE, 5)
+        firstMessageCalendar.add(Calendar.MINUTE, 3 * users.count() / 60)
         nextMessageTime = firstMessageCalendar.time
 
         statisticEventParams = StatisticEventParams(users.count())
 
-        while (currentMessageCount < statisticEventParams.totalMessageEventCount) {
+        while (nextMessageTime.time < endDate.time) {
 
             createMessageEvents()
         }
 
+        LogHelper.logD("Statistics:")
+        LogHelper.logSeparator()
         LogHelper.logD("totalCount: ${messageEvents.count()}")
         LogHelper.logD("mondayCount: ${getDayCount(Calendar.MONDAY)}")
         LogHelper.logD("tuesdayCount: ${getDayCount(Calendar.TUESDAY)}")
@@ -110,6 +112,46 @@ class MessageEventCreator @Inject constructor(
         LogHelper.logD("endDate: $endDate")
 
         LogHelper.logD("countConversations: ${messagesGenerator.personConversationPairs.count()}")
+        LogHelper.logSeparator()
+
+        val fileStatistics = File("/home/renat/Desktop/social network interaction/statistics.txt")
+        val writerStatistics = FileWriter(fileStatistics, false)
+
+        writerStatistics.appendln("Statistics:")
+        writerStatistics.appendln(LogHelper.separator)
+        writerStatistics.appendln("Users count: ${users.count()}")
+        writerStatistics.appendln("Total event count: ${messageEvents.count()}")
+        writerStatistics.appendln("Public posts count: ${messageEvents.filter { it is MessageEvent.PublicPostEvent }.count()}")
+        writerStatistics.appendln("Total private messages count: ${messageEvents.filter { it is MessageEvent.ConversationMessageEvent }.count()}")
+        writerStatistics.appendlnDayStat(Calendar.MONDAY)
+        writerStatistics.appendlnDayStat(Calendar.TUESDAY)
+        writerStatistics.appendlnDayStat(Calendar.WEDNESDAY)
+        writerStatistics.appendlnDayStat(Calendar.THURSDAY)
+        writerStatistics.appendlnDayStat(Calendar.FRIDAY)
+        writerStatistics.appendlnDayStat(Calendar.SATURDAY)
+        writerStatistics.appendlnDayStat(Calendar.SUNDAY)
+        writerStatistics.close()
+    }
+
+    private fun FileWriter.appendlnDayStat(day: Int) {
+
+        val dayHeader = when(day) {
+
+            Calendar.MONDAY -> "Понедельник"
+            Calendar.TUESDAY -> "Вторник"
+            Calendar.WEDNESDAY -> "Среда"
+            Calendar.THURSDAY -> "Четверг"
+            Calendar.FRIDAY -> "Пятница"
+            Calendar.SATURDAY -> "Суббота"
+            Calendar.SUNDAY ->  "Воскресенье"
+            else -> error("non supporting day value: $day")
+        }
+
+        appendln(LogHelper.separator)
+        appendln("$dayHeader:")
+        appendln("All: ${getDayCount(day)}")
+        appendln("Public posts: ${getPostsPerDay(day)}")
+        appendln("Private messages: ${getConvPerDay(day)}")
     }
 
     fun getMessageEvents(): List<MessageEvent> {
@@ -122,7 +164,7 @@ class MessageEventCreator @Inject constructor(
 
         val endCalendar = GregorianCalendar()
         endCalendar.time = startDate
-        endCalendar.add(Calendar.DAY_OF_MONTH, 7)
+        endCalendar.add(Calendar.DAY_OF_MONTH, AppConstant.daysCount)
         endDate = endCalendar.time
     }
 
@@ -143,11 +185,37 @@ class MessageEventCreator @Inject constructor(
         }.count()
     }
 
+    private fun getPostsPerDay(day: Int): Int {
+
+        return messageEvents.filter {
+
+            val calendar = GregorianCalendar()
+
+            calendar.time = it.time
+
+            calendar.get(Calendar.DAY_OF_WEEK) == day && it is MessageEvent.PublicPostEvent
+        }.count()
+    }
+
+    private fun getConvPerDay(day: Int): Int {
+
+        return messageEvents.filter {
+
+            val calendar = GregorianCalendar()
+
+            calendar.time = it.time
+
+            calendar.get(Calendar.DAY_OF_WEEK) == day && it is MessageEvent.ConversationMessageEvent
+        }.count()
+    }
+
     private fun createMessageEvents() {
 
         users.values.forEach {
 
             it.relationshipIds.forEach { (id, guid) ->
+
+                if (nextMessageTime.time >= endDate.time) return
 
                 val recipient = users.getValue(id)
 
@@ -227,8 +295,6 @@ class MessageEventCreator @Inject constructor(
 
         nextMessageTime = calendar.time
 
-        currentMessageCount++
-
         return calendar.time
     }
 
@@ -240,7 +306,9 @@ class MessageEventCreator @Inject constructor(
         val needMessageCount = statisticEventParams.getCurrentHourMessageCount(nextMessageTime)
         val remainingSeconds = 3600 - nextMessageTime.minutes * 60 - nextMessageTime.seconds
 
-        when (getCurrentMessageCount(nextMessageTime) < needMessageCount) {
+        val currentHourMessageCount = getCurrentHourMessageCount(nextMessageTime)
+
+        when (currentHourMessageCount < needMessageCount) {
 
             true -> {
 
@@ -259,8 +327,6 @@ class MessageEventCreator @Inject constructor(
         validateSendTime(calendar)
 
         nextMessageTime = calendar.time
-
-        currentMessageCount++
     }
 
     private fun validateSendTime(calendar: Calendar): Boolean {
@@ -277,7 +343,7 @@ class MessageEventCreator @Inject constructor(
         return false
     }
 
-    private fun getCurrentMessageCount(date: Date): Int {
+    private fun getCurrentHourMessageCount(date: Date): Int {
 
         return messageEvents.filter {
 
