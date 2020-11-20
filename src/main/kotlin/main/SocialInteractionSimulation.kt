@@ -122,6 +122,14 @@ class SocialInteractionSimulation {
         LogHelper.logD("count = ${usersMap.keys.count()}")
         LogHelper.logSeparator()
 
+        users.forEach { person ->
+
+            person.excludeRecipientIds.forEach { id ->
+
+                users.find { it.id == id }?.excludeRecipientIds?.add(person.id)
+            }
+        }
+
         messageEventSender.generateAndSendMessageEvents(usersMap)
     }
 }

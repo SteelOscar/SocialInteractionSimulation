@@ -217,6 +217,8 @@ class MessageEventCreator @Inject constructor(
         val id = it.relationshipIds.keys.random()
         val guid = it.relationshipIds[id]!!
 
+        if (id in it.excludeRecipientIds) return
+
         if (nextMessageTime.time >= endDate.time) return
 
         val recipient = users.getValue(id)

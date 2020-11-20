@@ -106,6 +106,7 @@ class NetworkRepositoryImpl @Inject constructor(
             val tokenHeader = hashMapOf("Authorization" to "Bearer ${AppConstant.CURRENT_USER_TOKEN}")
 
             tokenHeader["SenderId"] = model.senderId
+            tokenHeader["RecipientId"] = "All"
 
             apiInteractor.post(
                 url = "/api/v1/posts",

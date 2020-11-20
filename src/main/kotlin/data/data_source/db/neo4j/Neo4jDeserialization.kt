@@ -17,6 +17,8 @@ class Neo4jDeserialization @Inject constructor() {
 
     fun getPerson(node: Node): Person = with(node) {
 
+        val recipientIds = mutableListOf<Int>()
+
         Person(
             get("id").asString().toInt(),
             get("name").asString(),
@@ -29,6 +31,8 @@ class Neo4jDeserialization @Inject constructor() {
             get("action").asList {
 
                 val parse = it.asString().convertToModel<ActionParse>()
+
+                runCatching { recipientIds.add(parse.target.toInt()) }
                 Action(
                     public = parse.type != "private",
                     recipientId = parse.target,
@@ -37,7 +41,7 @@ class Neo4jDeserialization @Inject constructor() {
                 )
             },
             hashMapOf()
-        )
+        ).apply { excludeRecipientIds.addAll(recipientIds) }
     }
 
     private fun formatGender(gender: String): Gender = when (gender) {

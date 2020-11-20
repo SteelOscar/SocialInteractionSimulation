@@ -12,6 +12,7 @@ data class Person(
     val profRole: String,
     val actions: List<Action>,
     val relationshipIds: HashMap<Int,String>,
+    val excludeRecipientIds: MutableSet<Int> = mutableSetOf(),
     var authToken: String = "",
     var refreshToken: String = "",
     var diasporaId: String? = "",
