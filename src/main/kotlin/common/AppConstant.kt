@@ -30,6 +30,8 @@ object AppConstant {
     const val POSTGRES_HOST = "192.168.1.10"
     const val POSTGRES_PORT = 5432
 
+    var SNIFFING_INTERFACE = ""
+
     /**
      * Started from ip
      */

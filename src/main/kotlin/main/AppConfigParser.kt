@@ -23,6 +23,7 @@ object AppConfigParser {
                 it.contains("NEO4J_PASSWORD") -> AppConstant.PASSWORD = it.getValueAfterDelimiter()
                 it.contains("DIASPORA_IP") -> AppConstant.DIASPORA_HOST = it.getValueAfterDelimiter()
                 it.contains("LOCAL_IP") -> AppConstant.LOCAL_IP = it.getValueAfterDelimiter()
+                it.contains("SNIFFING_INTERFACE") -> AppConstant.SNIFFING_INTERFACE = it.getValueAfterDelimiter()
                 it.contains("DAYS_COUNT") -> AppConstant.daysCount = it.getValueAfterDelimiter().toInt()
                 it.contains("MESSAGES_PER_DAY") -> AppConstant.messageCountPerDay = it.getValueAfterDelimiter().toInt()
                 it.contains("POST_PERCENTAGE") -> AppConstant.postPercentage = it.getValueAfterDelimiter().removeSuffix("%").toInt()

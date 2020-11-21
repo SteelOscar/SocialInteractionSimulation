@@ -26,21 +26,26 @@ class MessageEventSender @Inject constructor(
 
         messageEventCreator.setUsers(users)
 
-        Runtime.getRuntime().exec("sudo wireshark -i ens38 -Y http -k")
+        Runtime.getRuntime().exec("sudo wireshark -i ${AppConstant.SNIFFING_INTERFACE} -Y http -k")
 
-        val fileEvents = File("/home/renat/Desktop/social network interaction/events.txt")
+        val fileEvents = File("${AppConstant.GENERATOR_PATH}/social network interaction/events.txt")
         val writer = FileWriter(fileEvents, false)
 
         messageEventCreator.getMessageEvents().forEach {
 
-            writer.write("$it\n")
+            writer.appendln("$it")
+            writer.appendln(LogHelper.separator)
         }
         writer.close()
 
-        val fileUsers = File("/home/renat/Desktop/social network interaction/users.txt")
+        val fileUsers = File("${AppConstant.GENERATOR_PATH}/social network interaction/users.txt")
         val writerUsers = FileWriter(fileUsers, false)
 
-        users.forEach { (i, person) -> writerUsers.write("id: $i, person: $person\n") }
+        users.forEach { (_, person) ->
+
+            writerUsers.appendln("$person")
+            writerUsers.appendln(LogHelper.separator)
+        }
         writerUsers.close()
 
         messageEventCreator.getMessageEvents().forEach {

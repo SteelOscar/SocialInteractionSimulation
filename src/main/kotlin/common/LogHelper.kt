@@ -10,7 +10,8 @@ object LogHelper {
 
     private val writer by lazy {
 
-        FileWriter(File("/home/renat/Desktop/social network interaction/logs.txt"))
+        File("${AppConstant.GENERATOR_PATH}/social network interaction").mkdirs()
+        FileWriter(File("${AppConstant.GENERATOR_PATH}/social network interaction/logs.txt"))
     }
 
     fun logI(message: Any) = log(message, "Info")

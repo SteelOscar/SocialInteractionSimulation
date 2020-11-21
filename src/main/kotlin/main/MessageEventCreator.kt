@@ -114,10 +114,12 @@ class MessageEventCreator @Inject constructor(
         LogHelper.logD("countConversations: ${messagesGenerator.personConversationPairs.count()}")
         LogHelper.logSeparator()
 
-        val fileStatistics = File("/home/renat/Desktop/social network interaction/statistics.txt")
+        val fileStatistics = File("${AppConstant.GENERATOR_PATH}/social network interaction/statistics.txt")
         val writerStatistics = FileWriter(fileStatistics, false)
 
         writerStatistics.appendln("Statistics:")
+        writerStatistics.appendln("start date: $startDate")
+        writerStatistics.appendln("end date: $endDate")
         writerStatistics.appendln(LogHelper.separator)
         writerStatistics.appendln("Users count: ${users.count()}")
         writerStatistics.appendln("Total event count: ${messageEvents.count()}")
