@@ -1,5 +1,6 @@
 package main
 
+import common.AppConstant
 import data.data_source.db.neo4j.model.Person
 import java.io.File
 import java.io.FileReader
@@ -28,14 +29,14 @@ class MessagesGenerator @Inject constructor() {
 
         val builder = ProcessBuilder()
 
-        builder.command("bash", "-c", "python3 /home/renat/IdeaProjects/SocialInteractionSimulation/DialogGenerate.py")
+        builder.command("bash", "-c", "python3 ${AppConstant.GENERATOR_PATH}/DialogGenerator/DialogGenerate.py")
 
         val process = builder.start()
 
         process.waitFor()
         process.destroy()
 
-        val targetFile = File("/home/renat/IdeaProjects/SocialInteractionSimulation/dialogs/Post.txt")
+        val targetFile = File("${AppConstant.GENERATOR_PATH}/dialogs/Post.txt")
         val fileReader = FileReader(targetFile)
         postMessages.addAll(fileReader.readLines())
         fileReader.close()
