@@ -54,9 +54,9 @@ class MessagesDialogPersonConversation {
 
             lines.forEachIndexed { index, s ->
 
-                if (index == lines.count() - 2 || index % 2 != 0) return@forEachIndexed
+                if (index == lines.count() - 1 || index % 2 != 0) return@forEachIndexed
 
-                add(s.substringAfter("]:") to lines.getOrNull(index + 2)?.substringAfter("]:"))
+                add(s.substringAfter("]:") to lines.getOrNull(index + 1)?.substringAfter("]:"))
             }
         }
     }
