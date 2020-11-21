@@ -1,5 +1,6 @@
 package main
 
+import common.AppConstant.GENERATOR_PATH
 import java.io.File
 import java.io.FileReader
 import java.util.LinkedList
@@ -25,7 +26,7 @@ class MessagesDialogPersonConversation {
 
         val builder = ProcessBuilder()
 
-        builder.command("bash", "-c", "python3 /home/renat/IdeaProjects/SocialInteractionSimulation/DialogGenerate.py")
+        builder.command("bash", "-c", "python3 $GENERATOR_PATH/DialogGenerator/DialogGenerate.py")
 
         val process = builder.start()
 
@@ -45,7 +46,7 @@ class MessagesDialogPersonConversation {
 
     private fun getMessagePairsFromDialog(dialogFileName: String): Queue<Pair<String,String?>> {
 
-        val targetFile = File("/home/renat/IdeaProjects/SocialInteractionSimulation/dialogs/$dialogFileName")
+        val targetFile = File("$GENERATOR_PATH/dialogs/$dialogFileName")
         val fileReader = FileReader(targetFile)
         val lines = fileReader.readLines()
         fileReader.close()

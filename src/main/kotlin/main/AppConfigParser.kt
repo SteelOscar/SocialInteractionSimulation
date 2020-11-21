@@ -33,6 +33,7 @@ object AppConfigParser {
                 it.contains("FRIDAY") -> AppConstant.FRIDAY = it.getValueAfterDelimiter().toDouble() / 100
                 it.contains("SATURDAY") -> AppConstant.SATURDAY = it.getValueAfterDelimiter().toDouble() / 100
                 it.contains("SUNDAY") -> AppConstant.SUNDAY = it.getValueAfterDelimiter().toDouble() / 100
+                it.contains("GENERATOR_PATH") -> AppConstant.GENERATOR_PATH = it.getValueAfterDelimiter()
                 else -> error("Can't parse line - $it")
             }
         }

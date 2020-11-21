@@ -63,4 +63,6 @@ object AppConstant {
     var FRIDAY = 0.0
     var SATURDAY = 0.0
     var SUNDAY = 0.0
+
+    var GENERATOR_PATH = ""
 }
