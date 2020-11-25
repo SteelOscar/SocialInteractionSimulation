@@ -27,8 +27,16 @@ object AppConstant {
     /**
      * Postgres DB
      */
-    const val POSTGRES_HOST = "192.168.1.10"
-    const val POSTGRES_PORT = 5432
+    var POSTGRES_USERNAME = "diaspora"
+    var POSTGRES_PASSWORD = "12345"
+    var POSTGRES_PORT = 5432
+
+    /**
+     * SSH configuration
+     */
+    var SSH_USERNAME = "diaspora"
+    var SSH_PASSWORD = "12345"
+    var SSH_PORT = 22
 
     var SNIFFING_INTERFACE = ""
 

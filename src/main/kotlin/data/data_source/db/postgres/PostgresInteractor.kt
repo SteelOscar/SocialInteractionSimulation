@@ -1,12 +1,14 @@
 package data.data_source.db.postgres
 
+import common.AppConstant
+
 interface PostgresInteractor {
 
     val username: String
-        get() = "diaspora"
+        get() = AppConstant.POSTGRES_USERNAME
 
     val password: String
-        get() = "12345"
+        get() = AppConstant.POSTGRES_PASSWORD
 
     val dataBase: String
         get() = "diaspora_development"

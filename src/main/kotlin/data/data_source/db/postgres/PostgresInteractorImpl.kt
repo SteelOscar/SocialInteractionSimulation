@@ -12,7 +12,7 @@ import javax.inject.Inject
 class PostgresInteractorImpl @Inject constructor() : PostgresInteractor {
 
     private val db = Database.connect(
-        url = "jdbc:postgresql://${AppConstant.POSTGRES_HOST}:${AppConstant.POSTGRES_PORT}/$dataBase",
+        url = "jdbc:postgresql://${AppConstant.DIASPORA_HOST}:${AppConstant.POSTGRES_PORT}/$dataBase",
         driver = "org.postgresql.Driver",
         user = username,
         password = password

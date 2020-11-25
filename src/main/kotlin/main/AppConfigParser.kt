@@ -20,6 +20,12 @@ object AppConfigParser {
 
                 it.contains("NEO4J_IP") -> AppConstant.NEO4J_HOST = it.getValueAfterDelimiter()
                 it.contains("NEO4J_USERNAME") -> AppConstant.USERNAME = it.getValueAfterDelimiter()
+                it.contains("POSTGRES_USERNAME") -> AppConstant.POSTGRES_USERNAME = it.getValueAfterDelimiter()
+                it.contains("POSTGRES_PASSWORD") -> AppConstant.POSTGRES_PASSWORD = it.getValueAfterDelimiter()
+                it.contains("POSTGRES_PORT") -> AppConstant.POSTGRES_PORT = it.getValueAfterDelimiter().toInt()
+                it.contains("SSH_USERNAME") -> AppConstant.SSH_USERNAME = it.getValueAfterDelimiter()
+                it.contains("SSH_PASSWORD") -> AppConstant.SSH_PASSWORD = it.getValueAfterDelimiter()
+                it.contains("SSH_PORT") -> AppConstant.SSH_PORT = it.getValueAfterDelimiter().toInt()
                 it.contains("NEO4J_PASSWORD") -> AppConstant.PASSWORD = it.getValueAfterDelimiter()
                 it.contains("DIASPORA_IP") -> AppConstant.DIASPORA_HOST = it.getValueAfterDelimiter()
                 it.contains("LOCAL_IP") -> AppConstant.LOCAL_IP = it.getValueAfterDelimiter()
@@ -42,5 +48,5 @@ object AppConfigParser {
         reader.close()
     }
 
-    private fun String.getValueAfterDelimiter() = this.substringAfter(": ")
+    private fun String.getValueAfterDelimiter() = this.substringAfter(": ").trim()
 }

@@ -11,19 +11,15 @@ import javax.inject.Inject
 
 class SshInteractor @Inject constructor() {
 
-    private val sshUserName = "diaspora"
-    private val sshPassword = "12345"
-    private val sshPort = 22
-
     private val scriptPath = "./createUserDiaspora.rb"
 
     fun createUser(user: Person, password: String) {
 
         val options = SSHOptions(
-            host = AppConstant.POSTGRES_HOST,
-            username = sshUserName,
-            password = sshPassword,
-            port = sshPort
+            host = AppConstant.DIASPORA_HOST,
+            username = AppConstant.SSH_USERNAME,
+            password = AppConstant.SSH_PASSWORD,
+            port = AppConstant.SSH_PORT
         )
 
         SSH.shell(options) {
@@ -31,8 +27,8 @@ class SshInteractor @Inject constructor() {
             execute("cd ./diaspora")
             val gender = when(user.gender) {
 
-                Gender.MAlE -> ""
-                Gender.FEMALE -> ""
+                Gender.MAlE -> "Мужской"
+                Gender.FEMALE -> "Женский"
             }
             LogHelper.logD(execute(
                 "rails r $scriptPath ${(user.name + user.surname + user.age).convertCyrillic()} $password" +
